@@ -229,12 +229,12 @@ class DashboardController {
 			groupsUsersCount.put (group.id, UserGroup.findAllWhere(group: group).size())
 		}
 		
-		render (view:'listGroups', model:["groups" : results[0], "groupsTotal": Group.count(), "groupsCount": results[1], groupsUsersCount: groupsUsersCount, "menuitem" : "listGroups",
+		render (view:'groups-list', model:["groups" : results[0], "groupsTotal": Group.count(), "groupsCount": results[1], groupsUsersCount: groupsUsersCount, "menuitem" : "listGroups",
 			appBaseUrl: request.getContextPath()])
 	}
 	
 	def createGroup = {
-		render (view:'createGroup',  model:[action: "create", "menuitem" : "createGroup"]);
+		render (view:'group-create',  model:[action: "create", "menuitem" : "createGroup"]);
 	}
 	
 	def listSystems = {
@@ -245,7 +245,7 @@ class DashboardController {
 
 		def results = systemsService.listSystems(params.max, params.offset, params.sort, params.order);
 
-		render (view:'listSystems', model:["systems" : results[0], "systemsTotal": SystemApi.count(), "systemsCount": results[1], "menuitem" : "listSystems",
+		render (view:'systems-list', model:["systems" : results[0], "systemsTotal": SystemApi.count(), "systemsCount": results[1], "menuitem" : "listSystems",
 			appBaseUrl: request.getContextPath()])
 	}
 }

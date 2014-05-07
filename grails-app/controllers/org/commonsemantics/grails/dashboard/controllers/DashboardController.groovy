@@ -278,6 +278,56 @@ class DashboardController {
 			appBaseUrl: request.getContextPath()])
 	}
 	
+	def lockGroup = {
+		def group = Group.findById(params.id)
+		log.debug 'Locking Group ' + group
+		group.locked = true
+		group.enabled = true;
+		if(params.redirect)
+			redirect(action:params.redirect, params:[])
+		else
+			render (view:'group-show', model:[item: group])
+	}
+
+	def unlockGroup = {
+		def group = Group.findById(params.id)
+		log.debug 'Unlocking Group ' + group
+		group.locked = false
+		group.enabled = true;
+		if(params.redirect)
+			redirect(action:params.redirect, params:[])
+		else
+			render (view:'group-show', model:[item: group])
+	}
+
+	def enableGroup = {
+		def group = Group.findById(params.id)
+		log.debug 'Enabling Group ' + group
+		group.enabled = true
+		group.locked = false
+		if(params.redirect)
+			redirect(action:params.redirect, params:[])
+		else
+			render (view:'group-show', model:[item: group])
+	}
+
+	def disableGroup = {
+		def group = Group.findById(params.id)
+		log.debug 'Disabling Group ' + group
+		group.enabled = false
+		group.locked = false
+		if(params.redirect)
+			redirect(action:params.redirect, params:[])
+		else
+			render (view:'group-show', model:[item: group])
+	}
+	
+	def showGroup = {
+		def group = Group.findById(params.id)
+		def counter = UserGroup.findAllWhere(group: group).size()
+		render (view:'group-show', model:[group:group]);
+	}
+	
 	def createGroup = {
 		render (view:'group-create',  model:[action: "create", "menuitem" : "createGroup"]);
 	}

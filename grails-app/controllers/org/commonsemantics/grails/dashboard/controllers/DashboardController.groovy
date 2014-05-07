@@ -107,6 +107,46 @@ class DashboardController {
 		render (view:'users-search', model:["menuitem" : "searchUser"]);
 	}
 	
+	def lockUser = {
+		def user = User.findById(params.id)
+		user.accountLocked = true
+		user.enabled = true;
+		if(params.redirect)
+			redirect(action:params.redirect, params:[id: params.id])
+		else
+			redirect(action:'showUser', params:[id: params.id])
+	}
+
+	def unlockUser = {
+		def user = User.findById(params.id)
+		user.accountLocked = false
+		user.enabled = true;
+		if(params.redirect)
+			redirect(action:params.redirect, params:[id: params.id])
+		else
+			redirect(action:'showUser', params:[id: params.id])
+	}
+
+	def enableUser = {
+		def user = User.findById(params.id)
+		user.enabled = true
+		user.accountLocked = false
+		if(params.redirect)
+			redirect(action:params.redirect, params:[id: params.id])
+		else
+			redirect(action:'showUser', params:[id: params.id])
+	}
+
+	def disableUser = {
+		def user = User.findById(params.id)
+		user.enabled = false
+		user.accountLocked = false
+		if(params.redirect)
+			redirect(action:params.redirect, params:[id: params.id])
+		else
+			redirect(action:'showUser', params:[id: params.id])
+	}
+	
 	def saveUser = {PersonCreateCommand cmd ->
 		log.debug("[TEST] save-user " + cmd.displayName);
 		UserCreateCommand c = new UserCreateCommand();

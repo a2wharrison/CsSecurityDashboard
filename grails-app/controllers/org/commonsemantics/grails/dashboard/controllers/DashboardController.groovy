@@ -93,6 +93,11 @@ class DashboardController {
 		render (view:'user-show', model:[label:params.testId, description:params.testDescription, user:user]);
 	}
 	
+	def editUser = {
+		def user = User.findById(params.id);
+		render (view:'user-edit', model:[user:user, userRoles: UsersUtils.getUserRoles(user)]);
+	}
+	
 	def createUser = {
 		def user = injectUserProfile()
 		render (view:'user-create',  model:[action: "create", roles: Role.list(), defaultRole: DefaultUsersRoles.USER, "menuitem" : "createUser"]);

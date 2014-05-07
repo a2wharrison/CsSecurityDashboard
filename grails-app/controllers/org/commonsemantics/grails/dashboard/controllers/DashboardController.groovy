@@ -328,6 +328,11 @@ class DashboardController {
 		render (view:'group-show', model:[group:group]);
 	}
 	
+	def editGroup = {
+		def group = Group.findById(params.id)
+		render (view:'group-edit', model:[group:group]);
+	}
+	
 	def createGroup = {
 		render (view:'group-create',  model:[action: "create", "menuitem" : "createGroup"]);
 	}

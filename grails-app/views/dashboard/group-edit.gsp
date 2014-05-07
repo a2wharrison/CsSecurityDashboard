@@ -9,7 +9,7 @@
 	<body>
 		<div class="csc-main">
 			<div class="title">
-				<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'user.png')}"/> Edit Group - id: ${group.id}
+				<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'groups.png')}"/> Edit Group - id: ${group.id}
 			</div>
 			
 			<g:form method="post" >

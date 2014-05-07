@@ -8,6 +8,10 @@
 	</head>
 	<body>
 		<div class="csc-main">
+			<div class="title">
+				<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'user.png')}"/> Edit User - id: ${user.id}
+			</div>
+		
 			<g:form method="post" >
 				<div class="csc-lens-container">
 					<g:render plugin="cs-users" template="/users/userEdit" />

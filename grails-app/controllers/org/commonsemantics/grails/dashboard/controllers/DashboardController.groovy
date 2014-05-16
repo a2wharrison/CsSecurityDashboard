@@ -32,6 +32,7 @@ import org.commonsemantics.grails.groups.commands.GroupCreateCommand
 import org.commonsemantics.grails.groups.commands.GroupEditCommand
 import org.commonsemantics.grails.groups.model.Group
 import org.commonsemantics.grails.groups.model.UserGroup
+import org.commonsemantics.grails.groups.utils.GroupsUtils
 import org.commonsemantics.grails.systems.model.SystemApi
 import org.commonsemantics.grails.users.commands.UserCreateCommand
 import org.commonsemantics.grails.users.model.Role
@@ -511,6 +512,86 @@ class DashboardController {
 			redirect(action:params.redirect, params:[])
 		else
 			render (view:'group-show', model:[item: group])
+	}
+	
+	def searchGroup = {
+		render (view:'groups-search', model:["menuitem" : "searchGroup"]);
+	}
+	
+	def performSearchGroup = {
+		def user = injectUserProfile()
+
+		if (!params.max) params.max = 15
+		if (!params.offset) params.offset = 0
+		if (!params.sort) params.sort = "name"
+		if (!params.order) params.order = "asc"
+
+		def groups = [];
+		def groupsCount = [:]
+		def groupsStatus = [:]
+		Group.list().each { agroup ->
+			groupsCount.put (agroup.id, UserGroup.findAllWhere(group: agroup).size())
+			groupsStatus.put (agroup.id, GroupsUtils.getStatusLabel(agroup))
+		}
+
+		// Search with no ordering
+		def groupCriteria = Group.createCriteria();
+		def r = [];
+
+		if(params.name!=null && params.name.trim().length()>0 &&
+		params.shortName!=null && params.shortName.trim().length()>0) {
+			println 'case 1'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+				and {
+					like('name', params.name)
+					like('shortName', params.shortName)
+				}
+			}
+		} else if(params.name!=null && params.name.trim().length()>0 &&
+		(params.shortName==null || params.shortName.trim().length()==0)) {
+			println 'case 2'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+				like('name', params.name)
+			}
+		} else if((params.name==null || params.name.trim().length()==0) &&
+		params.shortName!=null &&  params.shortName.trim().length()>0) {
+			println 'case 3'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+				like('shortName', params.shortName)
+			}
+		} else {
+			println 'case 4'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+			}
+		}
+		groups = r.toList();
+		//}
+
+
+		def groupsResults = []
+		groups.each { groupItem ->
+			def groupResult = [id:groupItem.id, name:groupItem.name, shortName: groupItem.shortName,
+						description: groupItem.description, status: GroupsUtils.getStatusLabel(groupItem), dateCreated: groupItem.dateCreated]
+			groupsResults << groupResult
+		}
+
+		def paginationResults = ['offset':params.offset+params.max, 'sort':params.sort, 'order':params.order]
+
+
+		def results = [groups: groupsResults, pagination: paginationResults, groupsCount: groupsCount]
+		render results as JSON
 	}
 	
 	def showGroup = {

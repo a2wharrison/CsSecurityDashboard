@@ -62,8 +62,8 @@
 	<body>
 		<div class="title">
 			<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'search.png')}"/> 
-				Users Search
+				 Search Users
 		</div>
-		<%-- <g:render template="searchUser" /> --%>
+		<g:render plugin="cs-users" template="/users/searchUser" />
 	</body>
 </html>

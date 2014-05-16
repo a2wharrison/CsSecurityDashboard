@@ -9,9 +9,11 @@
 	<g:render template="/shared/meta" />
 	<%-- <g:render template="/shared/title-and-icon" /> --%>
 	
-	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'reset.css', plugin: 'af-shared')}" type="text/css">
-	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'logo.css', plugin: 'af-shared')}" type="text/css">
-	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'full-screen.css', plugin: 'af-shared')}" type="text/css">
+	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'reset.css')}" type="text/css">
+	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'errors.css')}" type="text/css">
+	
+	<%--  <link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'logo.css')}" type="text/css"> --%>
+	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'full-screen.css')}" type="text/css">
 	<link rel="stylesheet" href="${resource(dir: 'css/dashboard', file: 'navigation-menu.css')}" type="text/css">
 	<link rel="stylesheet" href="${resource(dir: 'css/dashboard', file: 'dashboard-main.css')}" type="text/css">
 	<link rel="stylesheet" href="${resource(dir: 'css/dashboard', file: 'two-columns-layout.css')}" type="text/css">

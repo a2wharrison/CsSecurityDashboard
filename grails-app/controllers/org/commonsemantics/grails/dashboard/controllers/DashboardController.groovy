@@ -20,20 +20,24 @@
  */
 package org.commonsemantics.grails.dashboard.controllers
 
+
+
+import grails.converters.JSON
+
+import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.commonsemantics.grails.agents.commands.PersonCreateCommand
+import org.commonsemantics.grails.agents.commands.PersonEditCommand
 import org.commonsemantics.grails.agents.model.Person
+import org.commonsemantics.grails.groups.commands.GroupCreateCommand
+import org.commonsemantics.grails.groups.commands.GroupEditCommand
 import org.commonsemantics.grails.groups.model.Group
 import org.commonsemantics.grails.groups.model.UserGroup
 import org.commonsemantics.grails.systems.model.SystemApi
 import org.commonsemantics.grails.users.commands.UserCreateCommand
-import org.commonsemantics.grails.users.model.ProfilePrivacy
 import org.commonsemantics.grails.users.model.Role
 import org.commonsemantics.grails.users.model.User
-import org.commonsemantics.grails.users.model.UserProfilePrivacy
 import org.commonsemantics.grails.users.model.UserRole
-import org.commonsemantics.grails.users.utils.DefaultUsersProfilePrivacy
 import org.commonsemantics.grails.users.utils.DefaultUsersRoles
-import org.commonsemantics.grails.users.utils.UserStatus
 import org.commonsemantics.grails.users.utils.UsersUtils
 
 /**
@@ -147,12 +151,150 @@ class DashboardController {
 			redirect(action:'showUser', params:[id: params.id])
 	}
 	
+	def performSearchUser = {
+		def user = injectUserProfile()
+
+		if (!params.max) params.max = 1
+		if (!params.offset) params.offset = 0
+		if (!params.sort) params.sort = "username"
+		if (!params.order) params.order = "asc"
+
+		//TODO fix pagination
+		def users = [];
+		if (params.sort == 'status') {
+			def buffer = [];
+			def usersStatus = [:]
+			User.list().each { auser ->
+				usersStatus.put (auser.id, auser.status)
+			}
+			usersStatus = usersStatus.sort{ a, b -> a.value.compareTo(b.value) }
+			if(params.order == "desc")
+				usersStatus.each { userStatus ->
+					buffer.add(User.findById(userStatus.key));
+				}
+			else
+				usersStatus.reverseEach { userStatus ->
+					buffer.add(User.findById(userStatus.key));
+				}
+
+			int offset = (params.offset instanceof String) ? Integer.parseInt(params.offset) : params.offset
+			int max = (params.max instanceof String) ? Integer.parseInt(params.max) : params.max
+			for(int i=offset;i< Math.min(offset+max, usersStatus.size()); i++) {
+				users.add(buffer[i]);
+			}
+		} else if (params.sort == 'isAdmin' || params.sort == 'isAnalyst' || params.sort == 'isManager'
+		|| params.sort == 'isCurator' || params.sort == 'isUser') {
+
+		} else if (params.sort == 'name') {
+			def buffer = [];
+			def usersNames = [:]
+			User.list().each { auser ->
+				usersNames.put (auser.id, auser.name)
+			}
+			usersNames = usersNames.sort{ a, b -> a.value.compareTo(b.value) }
+			if(params.order == "desc")
+				usersNames.each { userName ->
+					buffer.add(User.findById(userName.key));
+				}
+			else
+				usersNames.reverseEach { userName ->
+					buffer.add(User.findById(userName.key));
+				}
+			int offset = (params.offset instanceof String) ? Integer.parseInt(params.offset) : params.offset
+			int max = (params.max instanceof String) ? Integer.parseInt(params.max) : params.max
+			for(int i=offset;i< Math.min(offset+max, usersNames.size()); i++) {
+				users.add(buffer[i]);
+			}
+		} else {
+			// Search with no ordering
+			def personCriteria = Person.createCriteria();
+			def userStatusCriteria = User.createCriteria();
+			def r = [];
+			if(params.firstName!=null && params.firstName.trim().length()>0 &&
+			params.lastName!=null && params.lastName.trim().length()>0) {
+				r = personCriteria.list {
+					maxResults(params.max?.toInteger())
+					firstResult(params.offset?.toInteger())
+					order(params.sort, params.order)
+					and {
+						like('firstName', params.firstName)
+						like('lastName', params.lastName)
+					}
+				}
+				r.toList().each{ person ->
+					def u = User.findByPerson(person);
+					users <- u;
+				}
+			} else if(params.firstName!=null && params.firstName.trim().length()>0 &&
+			(params.lastName==null || params.lastName.trim().length()==0)) {
+				r = personCriteria.list {
+					maxResults(params.max?.toInteger())
+					firstResult(params.offset?.toInteger())
+					order(params.sort, params.order)
+					like('firstName', params.firstName)
+				}
+				r.toList().each{ person ->
+					def u = User.findByPerson(person);
+					users <- u;
+				}
+			} else if((params.firstName==null || params.firstName.trim().length()==0) &&
+			params.lastName!=null && params.lastName.trim().length()>0) {
+				r = personCriteria.list {
+					maxResults(params.max?.toInteger())
+					firstResult(params.offset?.toInteger())
+					order(params.sort, params.order)
+					like('lastName', params.lastName)
+				}
+				r.toList().each{ person ->
+					def u = User.findByPerson(person);
+					users <- u;
+				}
+			} else if(params.displayName!=null && params.displayName.trim().length()>0) {
+				r = personCriteria.list {
+					maxResults(params.max?.toInteger())
+					firstResult(params.offset?.toInteger())
+					order(params.sort, params.order)
+					like('displayName', params.displayName)
+				}
+				r.toList().each{ person ->
+					def u = User.findByPerson(person);
+					users <- u;
+				}
+			} else {
+				r = User.list(max: params.max, offset: params.offset)
+			}
+		} 
+
+		def usersResults = []
+		users.each { userItem ->
+			def roles = UserRole.findAllByUser(userItem);
+			def userResult = [id:userItem.id, username:userItem.username, name: userItem.person.firstName + " " + userItem.person.lastName,
+						displayName: userItem.person.getDisplayName(),
+						isAdmin: roles.role.authority.contains(DefaultUsersRoles.ADMIN.value()), isManager: roles.role.authority.contains(DefaultUsersRoles.MANAGER.value()),
+						isUser: roles.role.authority.contains(DefaultUsersRoles.USER.value()), email: userItem.person.getEmail(),
+						status: UsersUtils.getStatusLabel(userItem), dateCreated: userItem.dateCreated]
+			usersResults << userResult
+		}
+
+		def paginationResults = ['offset':params.offset+params.max, 'sort':params.sort, 'order':params.order]
+
+
+		def results = [users: usersResults, pagination: paginationResults]
+		render results as JSON
+	}
+	
 	def saveUser = {PersonCreateCommand cmd ->
-		log.debug("[TEST] save-user " + cmd.displayName);
+		log.debug("save-user " + cmd.displayName);
+		def g = new ValidationTagLib()
 		UserCreateCommand c = new UserCreateCommand();
 		def validationFailed = agentsService.validatePerson(cmd);
 		if (validationFailed) {
-			log.error("[TEST] While Saving User's Person " + cmd.errors)
+			log.error("While Saving User's Person " + cmd.errors)
+			cmd.errors.allErrors.each { println "----> " + it }
+			c.username = params.username;
+			c.userStatus = params.userStatus;
+			c.person = cmd;
+			render (view:'user-create', model:[user:c]);
 		} else {
 			def person = new Person();
 			person.title = params.title;
@@ -182,13 +324,19 @@ class DashboardController {
 				} else {
 					def user = new User(username: params.username, person:person)
 					
-					if(c.isPasswordValid()) {
-						user.password = params.password;
-					} else {
-						log.error("Passwords not matching while saving " + it.target)
-						c.errors.rejectValue("password",
-							g.message(code: 'org.commonsemantics.grails.users.model.field.password.not.matching.message', default: "Passwords not matching"));
-					}
+//					if(c.isPasswordValid()) {
+//						user.password = params.password;
+//					} else {
+//						log.error("Passwords not matching while saving " + it.target)
+//						c.errors.rejectValue("password",
+//							g.message(code: 'org.commonsemantics.grails.users.model.field.password.not.matching.message', default: "Passwords not matching"));
+//					
+//						c.username = params.username;
+//						c.status = params.userStatus;
+//						c.person = cmd;
+//						render (view:'user-create', model:[user:c]);
+//						return;
+//					}
 					
 					if(!user.save(flush: true)) {
 						log.error("[TEST] While Saving User " + cmd.errors)
@@ -210,16 +358,27 @@ class DashboardController {
 						personStatus.setRollbackOnly();
 
 						c.username = params.username;
+						c.password = params.password;
+						c.passwordConfirmation = params.passwordConfirmation;
 						
-						if(c.isPasswordValid()) {
-							c.password = params.password;
-						} else {
-							log.error("Passwords not matching while saving " + it.target)
-							c.errors.rejectValue("password",
-								g.message(code: 'org.commonsemantics.grails.users.model.field.password.not.matching.message', default: "Passwords not matching"));
-						}
+//						if(c.isPasswordValid()) {
+//							//c.password = params.password;
+//						} else {
+//							log.error("x1 Passwords not matching while saving ")
+//							c.passwordConfirmation = null;
+//							c.errors.rejectValue("password",
+//								g.message(code: 'org.commonsemantics.grails.users.model.field.password.not.matching.message', default: "Passwords not matching"));
+//						}
 						
-						c.status = params.userStatus;
+						c.userStatus = params.userStatus;
+						
+						c.userProfilePrivacy = params.userProfilePrivacy
+						println 'userProfilePrivacy ' + c.userProfilePrivacy
+						
+						c.Administrator = params.Administrator
+						c.Manager = params.Manager
+						c.User = params.User
+						
 						c.person = cmd;
 						usersService.validateUser(c);
 
@@ -233,21 +392,83 @@ class DashboardController {
 						if(params.User=='on') {
 							usersRoles.add(Role.findByAuthority(DefaultUsersRoles.USER.value()));
 						}
-						render (view:'user-create', model:[label:params.testId, description:params.testDescription, user:c, userRoles: usersRoles]);
+						render (view:'user-create', model:[user:c, userRoles: usersRoles]);
 					} else {
 						log.debug("[TEST] save-user roles, privacy and status");
-						usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.ADMIN.value()), params.Administrator)
-						usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.MANAGER.value()), params.Manager)
-						usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), params.User)
-
+						
+						if(c.isPasswordValid()) {
+							user.password = params.password;
+						} else {
+							log.error("x3 - Passwords not matching while saving " + it.target)
+							c.errors.rejectValue("password",
+								g.message(code: 'org.commonsemantics.grails.users.model.field.password.not.matching.message', default: "Passwords not matching"));
+						
+						
+							c.username = params.username;
+							c.password = params.password;
+							c.passwordConfirmation = params.passwordConfirmation;
+							c.userStatus = params.userStatus;
+							
+							c.userProfilePrivacy = params.userProfilePrivacy
+							c.Administrator = params.Administrator
+							c.Manager = params.Manager
+							c.User = params.User
+							
+							c.person = cmd;
+							render (view:'user-create', model:[user:c]);
+							return;
+						}
+						
+						def selectedRole = false;
+						selectedRole = selectedRole || usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.ADMIN.value()), params.Administrator)
+						selectedRole = selectedRole || usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.MANAGER.value()), params.Manager)
+						selectedRole = selectedRole || usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), params.User)
+						if(!selectedRole) usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), "on")
+						
+						println '============== ' + params.userProfilePrivacy
 						usersService.updateUserProfilePrivacy(user, params.userProfilePrivacy)				
 						usersService.updateUserStatus(user, params.userStatus)
 
-						render (view:'user-show', model:[label:params.testId, description:params.testDescription, user:user]);
+						render (view:'user-show', model:[user:user]);
 						return;
 					}
 				}
 			}
+		}
+	}
+	
+	def updateUser = { PersonEditCommand personEditCmd ->
+		def validationFailed = agentsService.validatePerson(personEditCmd);
+		if (validationFailed) {
+			log.error("While Saving User's Person " + personEditCmd.errors)
+			
+			
+			
+			render(view:'user-edit', model:[item:userEditCmd])
+		} else {
+			def user = User.findById(params.id)
+			
+			usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.ADMIN.value()), params.Administrator)
+			usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.MANAGER.value()), params.Manager)
+			usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), params.User)
+
+			println '+++++ ' + params.userProfilePrivacy
+			
+			usersService.updateUserProfilePrivacy(user, params.userProfilePrivacy)
+			usersService.updateUserStatus(user, params.status)
+			
+			def person = user.person;
+			person.title = params.title;
+			person.firstName = params.firstName;
+			person.middleName = params.middleName;
+			person.lastName = params.lastName;
+			person.affiliation = params.affiliation;
+			person.country = params.country;
+			person.displayName = params.displayName;
+			person.email = params.email;
+			
+			render (view:'user-show', model:[user: user, 
+				appBaseUrl: request.getContextPath()])
 		}
 	}
 	
@@ -336,6 +557,63 @@ class DashboardController {
 	def createGroup = {
 		render (view:'group-create',  model:[action: "create", "menuitem" : "createGroup"]);
 	}
+	
+	def saveGroup = {GroupCreateCommand groupCreateCmd->
+		
+		def validationFailed = groupsService.validateGroup(groupCreateCmd);
+		if(validationFailed) {
+			log.error("While Creating Group " + groupCreateCmd.errors)
+			groupCreateCmd.errors.allErrors.each { println it }
+			render(view:'group-create', model:[group:groupCreateCmd, roles: Role.list(),
+						defaultRole: Role.findByAuthority("ROLE_USER")])
+		} else {
+			def group = groupCreateCmd.createGroup()
+			if(group)  {
+				def user = injectUserProfile();
+				group.createdBy = user;
+				groupsService.updateGroupPrivacy(group, groupCreateCmd.groupPrivacy);
+				groupsService.updateGroupStatus(group, groupCreateCmd.groupStatus);
+	
+				println 'lllllll ' + group.id + group.name + group.description + group.privacy+"--"+group.enabled
+				if(!group.save()) {
+					// Failure in saving
+					group.errors.allErrors.each { println it }
+					render(view:'group-create', model:[group:groupCreateCmd,
+								msgError: 'The group has not been saved successfully'])
+				} else {					
+					redirect (action:'showGroup', id: group.id, model: [
+								msgSuccess: 'Group saved successfully']);
+				}
+			} else {
+				// User already existing
+				render(view:'group-create', model:[group:groupCreateCmd,
+							msgError: 'A group with this name is already existing'])
+			}
+		}
+	}
+	
+	def updateGroup = { GroupEditCommand cmd ->
+		def validationFailed = groupsService.validateGroup(cmd);
+		if (validationFailed) {
+			log.error("While Updating Group " + cmd.errors)
+		} else {
+			def group = Group.findById(params.id);
+			log.debug("Updating Group " + group)
+			if(group!=null) {
+				group.name = params.name;
+				group.shortName = params.shortName;
+				group.description = params.description;
+	
+				groupsService.updateGroupStatus(group, params.groupStatus)
+				groupsService.updateGroupPrivacy(group, params.groupPrivacy);
+				
+				render (view:'group-show', model:[label:params.testId, description:params.testDescription, group:group]);
+				return;
+			}
+		}
+		render (view:'group-edit', model:[label:params.testId, description:params.testDescription, group:cmd]);
+	}
+	
 	
 	def listSystems = {
 		if (!params.max) params.max = 15

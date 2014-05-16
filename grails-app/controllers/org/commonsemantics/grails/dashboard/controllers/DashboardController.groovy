@@ -323,21 +323,6 @@ class DashboardController {
 					}
 				} else {
 					def user = new User(username: params.username, person:person)
-					
-//					if(c.isPasswordValid()) {
-//						user.password = params.password;
-//					} else {
-//						log.error("Passwords not matching while saving " + it.target)
-//						c.errors.rejectValue("password",
-//							g.message(code: 'org.commonsemantics.grails.users.model.field.password.not.matching.message', default: "Passwords not matching"));
-//					
-//						c.username = params.username;
-//						c.status = params.userStatus;
-//						c.person = cmd;
-//						render (view:'user-create', model:[user:c]);
-//						return;
-//					}
-					
 					if(!user.save(flush: true)) {
 						log.error("[TEST] While Saving User " + cmd.errors)
 						user.errors.each {
@@ -360,21 +345,10 @@ class DashboardController {
 						c.username = params.username;
 						c.password = params.password;
 						c.passwordConfirmation = params.passwordConfirmation;
-						
-//						if(c.isPasswordValid()) {
-//							//c.password = params.password;
-//						} else {
-//							log.error("x1 Passwords not matching while saving ")
-//							c.passwordConfirmation = null;
-//							c.errors.rejectValue("password",
-//								g.message(code: 'org.commonsemantics.grails.users.model.field.password.not.matching.message', default: "Passwords not matching"));
-//						}
-						
-						c.userStatus = params.userStatus;
-						
+
+						// Just for validation purposes
+						c.userStatus = params.userStatus;						
 						c.userProfilePrivacy = params.userProfilePrivacy
-						println 'userProfilePrivacy ' + c.userProfilePrivacy
-						
 						c.Administrator = params.Administrator
 						c.Manager = params.Manager
 						c.User = params.User
@@ -407,8 +381,9 @@ class DashboardController {
 							c.username = params.username;
 							c.password = params.password;
 							c.passwordConfirmation = params.passwordConfirmation;
-							c.userStatus = params.userStatus;
 							
+							// Just for validation purposes
+							c.userStatus = params.userStatus;
 							c.userProfilePrivacy = params.userProfilePrivacy
 							c.Administrator = params.Administrator
 							c.Manager = params.Manager
@@ -425,7 +400,6 @@ class DashboardController {
 						selectedRole = selectedRole || usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), params.User)
 						if(!selectedRole) usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), "on")
 						
-						println '============== ' + params.userProfilePrivacy
 						usersService.updateUserProfilePrivacy(user, params.userProfilePrivacy)				
 						usersService.updateUserStatus(user, params.userStatus)
 
@@ -471,10 +445,6 @@ class DashboardController {
 				appBaseUrl: request.getContextPath()])
 		}
 	}
-	
-	
-	
-	
 	
 	// ------------------------------------------------------------------------
 	//  CS-GROUPS:Group

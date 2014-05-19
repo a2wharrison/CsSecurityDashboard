@@ -72,6 +72,11 @@ class DashboardController {
 		}
 	}
 	
+	def index = {
+		def user = injectUserProfile()
+		render (view:'index', model:[user : user]);
+	}
+	
 	// ------------------------------------------------------------------------
 	//  CS-USERS:User
 	// ------------------------------------------------------------------------

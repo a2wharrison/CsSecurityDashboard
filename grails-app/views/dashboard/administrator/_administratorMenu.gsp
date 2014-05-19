@@ -56,7 +56,7 @@
 	<g:else><li><g:link controller="dashboard" action="createSystem">Create System</g:link></li></g:else>
 </ul>
 
-
+<%--
 <h3>Moderation Queues</h3>
 <ul id="navlist">
 	<g:if test="${menuitem!=null && menuitem=='pastUserAccountRequests'}">
@@ -71,8 +71,11 @@
 	<g:else>
 		<li><g:link controller="userAccuntRequest" action="moderateUserAccountsRequests">Moderate Account Requests</g:link></li>
 	</g:else>
-	<%--<li><g:link controller="adminDashboard" action="activateUser">Groups Requests</g:link>--%></li>
+	--%>
+	<%--<li><g:link controller="adminDashboard" action="activateUser">Groups Requests</g:link></li>--%>
+	<%-- 
 </ul>
+ --%>
 
 <%--
 <h3>Data dump</h3>

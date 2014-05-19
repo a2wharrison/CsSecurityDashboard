@@ -1,7 +1,7 @@
 <div class="wrapper col0">
  <div id="adminBar">
      <p class="f_left">
-     	<g:link controller="main" action="index">Home :: </g:link>
+     	<g:link controller="secure" action="index">Home :: </g:link>
     	<g:link controller="dashboard" action="index">
 			<sec:access expression="hasRole('ROLE_ADMIN')">
 				Administration Dashboard 

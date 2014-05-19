@@ -680,9 +680,6 @@ class DashboardController {
 			system.shortName = systemEditCmd.shortName
 			system.description = systemEditCmd.description
 
-			
-			println "-------- " + params.status
-			
 			systemsService.updateSystemStatus(system, params.status)
 
 			render (view:'system-show', model:[system: system,
@@ -780,5 +777,13 @@ class DashboardController {
 
 	def createSystem = {
 		render (view:'system-create',  model:[action: "create", "menuitem" : "createSystem"]);
+	}
+	
+	def regenerateSystemKey = {
+		def system = SystemApi.findById(params.id)
+		def key = UUID.randomUUID() as String
+		system.apikey = key;
+		render (view:'system-show', model:[system: system,
+			appBaseUrl: request.getContextPath()])
 	}
 }

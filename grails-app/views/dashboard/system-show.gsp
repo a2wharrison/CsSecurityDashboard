@@ -9,7 +9,7 @@
 	<body>
 		<div class="csc-main">
 			<div class="title">
-				<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'groups.png')}"/> System - id: ${system.id}
+				<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'computer.png')}"/> System - id: ${system.id}
 			</div>
 		
 			<g:form method="post" >
@@ -20,10 +20,13 @@
 				<br/>
 				<div class="buttons">
 					<span class="button">
-						<g:actionSubmit class="save" action="editSystem" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit System')}" />
+						<g:actionSubmit class="edit" action="editSystem" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit System')}" />
 					</span>
 					<span class="button">
 						<g:actionSubmit class="save" action="listSystems" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Systems')}" />
+					</span>
+					<span class="button">
+						<g:actionSubmit class="reload" action="regenerateSystemKey" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Regenerate API Key')}" />
 					</span>
 				</div>
 			</g:form>

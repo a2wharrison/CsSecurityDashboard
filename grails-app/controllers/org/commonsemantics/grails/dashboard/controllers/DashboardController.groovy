@@ -32,7 +32,8 @@ import org.commonsemantics.grails.groups.commands.GroupCreateCommand
 import org.commonsemantics.grails.groups.commands.GroupEditCommand
 import org.commonsemantics.grails.groups.model.Group
 import org.commonsemantics.grails.groups.model.UserGroup
-import org.commonsemantics.grails.groups.utils.GroupsUtils
+import org.commonsemantics.grails.systems.commands.SystemApiCreateCommand
+import org.commonsemantics.grails.systems.commands.SystemApiEditCommand
 import org.commonsemantics.grails.systems.model.SystemApi
 import org.commonsemantics.grails.users.commands.UserCreateCommand
 import org.commonsemantics.grails.users.model.Role
@@ -521,76 +522,13 @@ class DashboardController {
 	def performSearchGroup = {
 		def user = injectUserProfile()
 
+		// Default parameters
 		if (!params.max) params.max = 15
 		if (!params.offset) params.offset = 0
 		if (!params.sort) params.sort = "name"
 		if (!params.order) params.order = "asc"
-
-		def groups = [];
-		def groupsCount = [:]
-		def groupsStatus = [:]
-		Group.list().each { agroup ->
-			groupsCount.put (agroup.id, UserGroup.findAllWhere(group: agroup).size())
-			groupsStatus.put (agroup.id, GroupsUtils.getStatusLabel(agroup))
-		}
-
-		// Search with no ordering
-		def groupCriteria = Group.createCriteria();
-		def r = [];
-
-		if(params.name!=null && params.name.trim().length()>0 &&
-		params.shortName!=null && params.shortName.trim().length()>0) {
-			println 'case 1'
-			r = groupCriteria.list {
-				maxResults(params.max?.toInteger())
-				firstResult(params.offset?.toInteger())
-				order(params.sort, params.order)
-				and {
-					like('name', params.name)
-					like('shortName', params.shortName)
-				}
-			}
-		} else if(params.name!=null && params.name.trim().length()>0 &&
-		(params.shortName==null || params.shortName.trim().length()==0)) {
-			println 'case 2'
-			r = groupCriteria.list {
-				maxResults(params.max?.toInteger())
-				firstResult(params.offset?.toInteger())
-				order(params.sort, params.order)
-				like('name', params.name)
-			}
-		} else if((params.name==null || params.name.trim().length()==0) &&
-		params.shortName!=null &&  params.shortName.trim().length()>0) {
-			println 'case 3'
-			r = groupCriteria.list {
-				maxResults(params.max?.toInteger())
-				firstResult(params.offset?.toInteger())
-				order(params.sort, params.order)
-				like('shortName', params.shortName)
-			}
-		} else {
-			println 'case 4'
-			r = groupCriteria.list {
-				maxResults(params.max?.toInteger())
-				firstResult(params.offset?.toInteger())
-				order(params.sort, params.order)
-			}
-		}
-		groups = r.toList();
-		//}
-
-
-		def groupsResults = []
-		groups.each { groupItem ->
-			def groupResult = [id:groupItem.id, name:groupItem.name, shortName: groupItem.shortName,
-						description: groupItem.description, status: GroupsUtils.getStatusLabel(groupItem), dateCreated: groupItem.dateCreated]
-			groupsResults << groupResult
-		}
-
-		def paginationResults = ['offset':params.offset+params.max, 'sort':params.sort, 'order':params.order]
-
-
-		def results = [groups: groupsResults, pagination: paginationResults, groupsCount: groupsCount]
+		
+		def results = groupsService.searchGroups(params.name, params.shortName, params.max,  params.offset,  params.sort,  params.order)
 		render results as JSON
 	}
 	
@@ -666,6 +604,10 @@ class DashboardController {
 	}
 	
 	
+	// ------------------------------------------------------------------------
+	//  CS-SYSTEMS:System
+	// ------------------------------------------------------------------------
+	
 	def listSystems = {
 		if (!params.max) params.max = 15
 		if (!params.offset) params.offset = 0
@@ -676,5 +618,167 @@ class DashboardController {
 
 		render (view:'systems-list', model:["systems" : results[0], "systemsTotal": SystemApi.count(), "systemsCount": results[1], "menuitem" : "listSystems",
 			appBaseUrl: request.getContextPath()])
+	}
+	
+	def enableSystem = {
+		def group = SystemApi.findById(params.id)
+		group.enabled = true
+		if(params.redirect)
+			redirect(action:params.redirect)
+		else
+			render (view:'showSystem', model:[item: group])
+	}
+
+	def disableSystem = {
+		def group = SystemApi.findById(params.id)
+		group.enabled = false
+		if(params.redirect)
+			redirect(action:params.redirect)
+		else
+			render (view:'showSystem', model:[item: group])
+	}
+	
+	def saveSystem = {SystemApiCreateCommand systemCreateCmd->
+		if(systemCreateCmd.hasErrors()) {
+			systemCreateCmd.errors.allErrors.each { println it }
+			render(view:'createUser', model:[item:systemCreateCmd])
+		} else {
+			def system = systemCreateCmd.createSystem()
+			def user = injectUserProfile();
+			println '------------ ' + system
+			if(system)  {
+				system.createdBy = user;
+				if(!system.save()) {
+					// Failure in saving
+					system.errors.allErrors.each { println it }
+					render(view:'system-create', model:[item:systemCreateCmd,
+								msgError: 'The system has not been saved successfully'])
+				} else {
+					redirect (action:'showSystem', id: system.id, model: [
+								msgSuccess: 'System saved successfully']);
+				}
+			} else {
+				// User already existing
+				render(view:'system-create', model:[item:systemCreateCmd,
+							msgError: 'A system with this name is already existing'])
+			}
+		}
+	}	
+	
+	def editSystem = {
+		def system = SystemApi.findById(params.id)
+		render (view:'system-edit', model:[system: system, action: "edit"])
+	}
+
+	def updateSystem = { SystemApiEditCommand systemEditCmd ->
+		if(systemEditCmd.hasErrors()) {
+			systemEditCmd.errors.allErrors.each { println it }
+			render(view:'system-edit', model:[system:systemEditCmd])
+		} else {
+			def system = SystemApi.findById(params.id)
+			system.name = systemEditCmd.name
+			system.shortName = systemEditCmd.shortName
+			system.description = systemEditCmd.description
+
+			
+			println "-------- " + params.status
+			
+			systemsService.updateSystemStatus(system, params.status)
+
+			render (view:'system-show', model:[system: system,
+				appBaseUrl: request.getContextPath()])
+		}
+	}
+	
+	def searchSystem = {
+		render (view:'systems-search', model:["menuitem" : "searchSystems"]);
+	}
+	
+	def performSystemSearch = {
+		def user = injectUserProfile()
+
+		if (!params.max) params.max = 15
+		if (!params.offset) params.offset = 0
+		if (!params.sort) params.sort = "name"
+		if (!params.order) params.order = "asc"
+
+		def groups = [];
+		def groupsCount = [:]
+		def usersCount = [:]
+		def groupsStatus = [:]
+		SystemApi.list().each { agroup ->
+			usersCount.put (agroup.id, agroup.users.size())
+			groupsCount.put (agroup.id, agroup.groups.size())
+			groupsStatus.put (agroup.id, (agroup.enabled?"enabled":"disabled"))
+		}
+
+		// Search with no ordering
+		def groupCriteria = SystemApi.createCriteria();
+		def r = [];
+
+		if(params.name!=null && params.name.trim().length()>0 &&
+		params.shortName!=null && params.shortName.trim().length()>0) {
+			println 'case 1'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+				and {
+					like('name', params.name)
+					like('shortName', params.shortName)
+				}
+			}
+		} else if(params.name!=null && params.name.trim().length()>0 &&
+		(params.shortName==null || params.shortName.trim().length()==0)) {
+			println 'case 2'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+				like('name', params.name)
+			}
+		} else if((params.name==null || params.name.trim().length()==0) &&
+		params.shortName!=null &&  params.shortName.trim().length()>0) {
+			println 'case 3'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+				like('shortName', params.shortName)
+			}
+		} else {
+			println 'case 4'
+			r = groupCriteria.list {
+				maxResults(params.max?.toInteger())
+				firstResult(params.offset?.toInteger())
+				order(params.sort, params.order)
+			}
+		}
+		groups = r.toList();
+		//}
+
+
+		def groupsResults = []
+		groups.each { groupItem ->
+			def groupResult = [id:groupItem.id, name:groupItem.name, shortName: groupItem.shortName,
+						description: groupItem.description, status: (groupItem.enabled?"enabled":"disabled"), dateCreated: groupItem.dateCreated]
+			groupsResults << groupResult
+		}
+
+		def paginationResults = ['offset':params.offset+params.max, 'sort':params.sort, 'order':params.order]
+
+
+		def results = [groups: groupsResults, pagination: paginationResults, groupsCount: groupsCount, usersCount: usersCount]
+		render results as JSON
+	}
+	
+	def showSystem = {
+		def system = SystemApi.findById(params.id)
+		render (view:'system-show', model:[system: system,
+			appBaseUrl: request.getContextPath()])
+	}
+
+	def createSystem = {
+		render (view:'system-create',  model:[action: "create", "menuitem" : "createSystem"]);
 	}
 }

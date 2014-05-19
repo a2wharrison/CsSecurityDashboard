@@ -64,6 +64,6 @@
 			<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'search.png')}"/> 
 				 Search Groups
 		</div>
-		<g:render plugin="cs-users" template="/groups/groupsSearch" />
+		<g:render plugin="cs-groups" template="/groups/groupsSearch" />
 	</body>
 </html>

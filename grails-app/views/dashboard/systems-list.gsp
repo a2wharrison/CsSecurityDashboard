@@ -12,7 +12,7 @@
   				System List - total# ${systems.size()}
   		</div>
   		<sec:access expression="hasRole('ROLE_ADMIN')">
-			<%--<g:render template="/systems/systemsList" plugin="cs-system"/>--%>
+			<g:render template="/systems/systemsList" plugin="cs-systems"/>
 			<%--<g:render template="/administrator/listSystems" /> --%>
 		</sec:access>
 		<sec:ifNotGranted roles="ROLE_ADMIN">

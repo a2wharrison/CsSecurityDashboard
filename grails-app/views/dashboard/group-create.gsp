@@ -26,6 +26,9 @@
 				<span class="button">
 					<g:actionSubmit class="save" action="saveGroup" value="${message(code: 'org.commonsemantics.grails.users.profile.create', default: 'Create Group')}" />
 				</span>
+				<span class="button">
+					<g:actionSubmit class="disable" action="listGroups" value="${message(code: 'org.commonsemantics.grails.general.cancel', default: 'Cancel')}" />
+				</span>
 			</div>
 		</g:form>
 	</body>

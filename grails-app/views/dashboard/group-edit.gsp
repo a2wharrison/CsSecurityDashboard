@@ -24,7 +24,7 @@
 								<g:actionSubmit class="save" action="updateGroup" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Update Group')}" />
 							</span>
 							<span class="button">
-								<g:actionSubmit class="cancel" action="showGroup" value="${message(code: 'org.commonsemantics.grails.general.cancel', default: 'Cancel')}" />
+								<g:actionSubmit class="disable" action="showGroup" value="${message(code: 'org.commonsemantics.grails.general.cancel', default: 'Cancel')}" />
 							</span>
 						</div>
 					</td>

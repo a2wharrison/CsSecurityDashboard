@@ -73,7 +73,7 @@ class DashboardController {
 	}
 	
 	def index = {
-		def user = injectUserProfile()
+		def user = injectUserProfile();
 		render (view:'index', model:[user : user]);
 	}
 	

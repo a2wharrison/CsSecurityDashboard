@@ -20,10 +20,10 @@
 				<br/>
 				<div class="buttons">
 					<span class="button">
-						<g:actionSubmit class="save" action="editGroup" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit Group')}" />
+						<g:actionSubmit class="edit" action="editGroup" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit Group')}" />
 					</span>
 					<span class="button">
-						<g:actionSubmit class="save" action="listGroups" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Groups')}" />
+						<g:actionSubmit class="list" action="listGroups" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Groups')}" />
 					</span>
 				</div>
 			</g:form>

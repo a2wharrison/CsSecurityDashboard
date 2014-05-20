@@ -18,7 +18,7 @@
 							<g:actionSubmit class="save" action="saveUser" value="${message(code: 'org.commonsemantics.grails.users.profile.create', default: 'Create User')}" />
 						</span>
 						<span class="button">
-							<g:actionSubmit class="cancel" action="showUser" value="${message(code: 'org.commonsemantics.grails.general.cancel', default: 'Cancel')}" />
+							<g:actionSubmit class="disable" action="listUsers" value="${message(code: 'org.commonsemantics.grails.general.cancel', default: 'Cancel')}" />
 						</span>
 					</div>
 				</td>

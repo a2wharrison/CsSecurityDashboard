@@ -14,9 +14,13 @@
 	
 	<%--  <link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'logo.css')}" type="text/css"> --%>
 	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'full-screen.css')}" type="text/css">
+	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'administration-bar.css', plugin: 'af-shared')}" type="text/css">
 	<link rel="stylesheet" href="${resource(dir: 'css/dashboard', file: 'navigation-menu.css')}" type="text/css">
 	<link rel="stylesheet" href="${resource(dir: 'css/dashboard', file: 'dashboard-main.css')}" type="text/css">
 	<link rel="stylesheet" href="${resource(dir: 'css/dashboard', file: 'two-columns-layout.css')}" type="text/css">
+	
+	<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'csc-general.css', plugin: 'cs-commons')}" />
+	<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'csc-info.css', plugin: 'cs-commons')}" />
 
 	<g:javascript library="jquery"/>
 
@@ -24,7 +28,7 @@
 	<r:layoutResources />
 </head>
 <body>
-	<g:render template="/dashboard/shared/administration" />
+	<g:render template="/dashboard/shared/administration-admin-topbar" />
 	<br/><br/>
 
 	<div class="wrapper col3">

@@ -13,10 +13,11 @@
 			</div>
 			<g:form method="post" >
 				<div class="csc-lens-container">
+					<br/>
 					<g:hiddenField name="id" value="${user.id}" /> 
 					<g:render plugin="cs-users" template="/users/userShow" />
+					<br/>
 				</div>
-				<br/>
 				<div class="buttons">
 					<span class="button">
 						<g:actionSubmit class="edit" action="editUser" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit User')}" />

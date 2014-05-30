@@ -14,10 +14,11 @@
 		
 			<g:form method="post" >
 				<div class="csc-lens-container">
+					<br/>
 					<g:hiddenField name="id" value="${system.id}" /> 
 					<g:render plugin="cs-groups" template="/systems/systemShow" />
+					<br/>
 				</div>
-				<br/>
 				<div class="buttons">
 					<span class="button">
 						<g:actionSubmit class="edit" action="editSystem" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit System')}" />

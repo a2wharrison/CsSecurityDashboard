@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Massachusetts General Hospital
+ * Copyright 2014  Common Semantics (commonsemantics.org)
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,8 +19,6 @@
  * under the License.
  */
 package org.commonsemantics.grails.dashboard.controllers
-
-
 
 import grails.converters.JSON
 

@@ -33,7 +33,7 @@
 			  	})
 			  	.fail(function( jqXHR, textStatus ) {
 			  		$("#groupsSpinner").css("display","none");
-			  		$("#groupsTitle").html("<b>Failed to load the list of groups</b>");
+			  		$("#groupsTitle").html("<b>! Failed to load the list of groups</b>");
 			  		$("#userGroupsComponent").css("display","none");
 				});
 		  	});

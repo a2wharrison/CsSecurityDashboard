@@ -608,6 +608,22 @@ class DashboardController {
 		render (view:'group-edit', model:[label:params.testId, description:params.testDescription, group:cmd]);
 	}
 	
+	def listGroupUsers = {
+		log.debug("Listing users for group " + (params.id?("(id:" + params.id + ")"):"(No id specified)"));
+		
+		def group = Group.findById(params.id)
+		
+		if (!params.max) params.max = 10
+		if (!params.offset) params.offset = 0
+		//if (!params.sort) params.sort = "username"
+		//if (!params.order) params.order = "asc"
+
+		def userGroups = UserGroup.findAllByGroup(group, [max: params.max, sort: params.sort, order: params.order, offset: params.offset]);
+
+		render (view:'group-users-list', model:[
+			group: group, "userGroups" : userGroups, "usersTotal": userGroups.size(), "usersroles": UserRole.list(), "roles" : Role.list()])
+	}
+	
 	
 	// ------------------------------------------------------------------------
 	//  CS-SYSTEMS:System

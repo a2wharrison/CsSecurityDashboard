@@ -29,7 +29,11 @@ import org.commonsemantics.grails.agents.model.Person
 import org.commonsemantics.grails.groups.commands.GroupCreateCommand
 import org.commonsemantics.grails.groups.commands.GroupEditCommand
 import org.commonsemantics.grails.groups.model.Group
+import org.commonsemantics.grails.groups.model.GroupRole
 import org.commonsemantics.grails.groups.model.UserGroup
+import org.commonsemantics.grails.groups.model.UserStatusInGroup
+import org.commonsemantics.grails.groups.utils.DefaultGroupRoles
+import org.commonsemantics.grails.groups.utils.DefaultUserStatusInGroup
 import org.commonsemantics.grails.systems.commands.SystemApiCreateCommand
 import org.commonsemantics.grails.systems.commands.SystemApiEditCommand
 import org.commonsemantics.grails.systems.model.SystemApi
@@ -639,6 +643,23 @@ class DashboardController {
 		def user = User.findById(params.id)
 		render (view:'group-user-add', model:["menuitem" : "searchGroup", 'user': user,
 			appBaseUrl: request.getContextPath()]);
+	}
+	
+	def enrollUserInGroup = {
+		def user = User.findById(params.user)
+		def group = Group.findById(params.group)
+		
+		def ug = new UserGroup(user:user, group:group,
+			status: UserStatusInGroup.findByValue(DefaultUserStatusInGroup.ACTIVE.value()));
+		
+		if(!ug.save(flush: true)) {
+			ug.errors.allErrors.each { println it }
+		} else {
+			ug.roles = []
+			ug.roles.add GroupRole.findByAuthority(DefaultGroupRoles.USER.value())
+		}
+			
+		redirect(action:'showUser', params: [id: params.user]);
 	}
 	
 	// ------------------------------------------------------------------------

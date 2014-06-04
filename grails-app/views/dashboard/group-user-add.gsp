@@ -51,7 +51,7 @@
 			eTr.appendChild(eCnt);
 
 			var eLink = document.createElement('a');
-			eLink.href =  '${appBaseUrl}/adminDashboard/enrollUserInGroup?group=' +response.groups[i].id + '&user=' + '${user.id}';
+			eLink.href =  '${appBaseUrl}/dashboard/enrollUserInGroup?group=' +response.groups[i].id + '&user=' + '${user.id}';
 			var eImg = document.createElement('img');
 			//eImg.src = '/DomeoDashboard/static/images/dashboard/add_user.png';
 			var eAct = document.createElement('td');

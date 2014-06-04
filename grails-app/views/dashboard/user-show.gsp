@@ -18,7 +18,8 @@
 		  	   .done(function(data){
 		  			$("#groupsSpinner").css("display","none");
 		  			var label = data.length == 1 ? data.length + ' Group' : data.length + ' Groups';
-		  			$("#groupsTitle").html("<b>"+label+"</b>");
+		  			$("#groupsTitle").html("");
+		  			$("#groupsNumber").html(" " + label);
 		  			$.each(data, function(i,item){
 			  			var roles ="";
 						for(var i=0; i<item.roles.length; i++) {
@@ -35,6 +36,41 @@
 			  		$("#groupsSpinner").css("display","none");
 			  		$("#groupsTitle").html("<b>! Failed to load the list of groups</b>");
 			  		$("#userGroupsComponent").css("display","none");
+				});
+				
+		  		$.ajax({
+			  	  	url: "${appBaseUrl}/dashboardAjax/userSystems",
+			  	  	context: $("#systemsContent"),
+			  	  	data: dataToSend,
+			  	  	statusCode: {
+			          	404: function() {
+			          		$("#systemsSpinner").css("display","none");
+					  		$("#systemsTitle").html("<b>! Failed to load the list of systems (404)</b>");
+					  		$("#userSystemsComponent").css("display","none");
+			          	}
+			        }
+		  		})
+		  	   .done(function(data){
+		  			$("#systemsSpinner").css("display","none");
+		  			var label = data.length == 1 ? data.length + ' System' : data.length + ' Systems';
+		  			$("#systemsTitle").html("");
+		  			$("#systemsNumber").html(" " + label);
+		  			$.each(data, function(i,item){
+			  			var roles ="";
+						for(var i=0; i<item.roles.length; i++) {
+							roles+=item.roles[i].label
+						}
+		  				$('#systemsTable').append('<tr><td><a href="../showSystem/' + 
+			  				item.system.id + '">' + item.system.name + '</a></td><td>' + 
+			  				item.dateCreated + '</td><td>'+ roles +
+			  				'</td><td> '+ item.status.label + '</td></tr>');
+		  		    });
+		  					  			
+			  	})
+			  	.fail(function( jqXHR, textStatus ) {
+			  		$("#systemsSpinner").css("display","none");
+			  		$("#systemsTitle").html("<b>! Failed to load the list of systems</b>");
+			  		$("#userSystemsComponent").css("display","none");
 				});
 		  	});
 		</script>
@@ -66,11 +102,20 @@
 			<tr>
 				<td valign="top">
 					<div class="title">
-						<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'groups.png')}"/> Groups
+						<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'groups.png')}"/><span id="groupsNumber"/> Groups
 					</div>
 					<g:render template="/groups/ajaxShowUserGroups" />
 				</td>
 			</tr>
+			<tr>
+				<td valign="top">
+					<div class="title">
+						<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'computer.png')}"/><span id="systemsNumber"/> Systems
+					</div>
+					<g:render template="/systems/ajaxShowUserSystems" />
+				</td>
+			</tr>
 		</table>
+		<br/><br/><br/><br/>
 	</body>
 </html>

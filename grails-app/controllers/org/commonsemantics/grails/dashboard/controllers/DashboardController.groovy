@@ -717,7 +717,7 @@ class DashboardController {
 			system.shortName = systemEditCmd.shortName
 			system.description = systemEditCmd.description
 
-			systemsService.updateSystemStatus(system, params.status)
+			systemsService.updateSystemStatus(system, params.systemStatus)
 
 			render (view:'system-show', model:[system: system,
 				appBaseUrl: request.getContextPath()])
@@ -820,6 +820,14 @@ class DashboardController {
 		def system = SystemApi.findById(params.id)
 		def key = UUID.randomUUID() as String
 		system.apikey = key;
+		render (view:'system-show', model:[system: system,
+			appBaseUrl: request.getContextPath()])
+	}
+	
+	def regenerateSystemSecretKey = {
+		def system = SystemApi.findById(params.id)
+		def key = UUID.randomUUID() as String
+		system.secretkey = key;
 		render (view:'system-show', model:[system: system,
 			appBaseUrl: request.getContextPath()])
 	}

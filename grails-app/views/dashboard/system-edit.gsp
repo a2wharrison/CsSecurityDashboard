@@ -16,7 +16,6 @@
 				<div class="csc-lens-container">
 					<g:render plugin="cs-groups" template="/systems/systemEditFields" />
 				</div>
-				<br/>
 				<tr>
 					<td valign="top" colspan="2" >
 						<div class="buttons">

@@ -29,6 +29,11 @@
 					<span class="button">
 						<g:actionSubmit class="reload" action="regenerateSystemKey" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Regenerate API Key')}" />
 					</span>
+					<g:if test="${grailsApplication.config.org.commonsemantics.grails.systems.model.field.secretkey!='hide'}">
+						<span class="button">
+							<g:actionSubmit class="reload" action="regenerateSystemSecretKey" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Regenerate Secret Key')}" />
+						</span>
+					</g:if>
 				</div>
 			</g:form>
 		</div>

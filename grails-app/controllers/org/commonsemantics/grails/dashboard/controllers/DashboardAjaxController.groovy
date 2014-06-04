@@ -20,9 +20,35 @@
  */
 package org.commonsemantics.grails.dashboard.controllers
 
+import grails.converters.JSON
+
+import org.commonsemantics.grails.groups.model.UserGroup
+import org.commonsemantics.grails.users.model.User
+
 /**
  * @author Paolo Ciccarese <paolo.ciccarese@gmail.com>
  */
 class DashboardAjaxController {
 
+	// GROUPS
+	//--------------------------------
+	/*
+	 * Pass through method that extracts the id parameter
+	 * of the user and returns hers UserGroup entities.
+	 */
+	def userGroups = {
+		return getUserGroups(User.findById(params.id));
+	}
+	
+	/*
+	 * This returns UserGroup entities as that makes possible
+	 * retrieving the details for this relationship and both
+	 * the user and the group data
+	 */
+	def getUserGroups(def user) {
+		def userGroups = []
+		userGroups = UserGroup.findAllByUser(user)
+		JSON.use("deep")
+		render userGroups as JSON;
+	}
 }

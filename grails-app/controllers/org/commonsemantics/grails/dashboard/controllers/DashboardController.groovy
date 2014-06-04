@@ -622,6 +622,24 @@ class DashboardController {
 			group: group, "userGroups" : userGroups, "usersTotal": userGroups.size(), "usersroles": UserRole.list(), "roles" : Role.list()])
 	}
 	
+	def manageUserGroups = {
+		def user = User.findById(params.id)
+
+		if (!params.max) params.max = 15
+		if (!params.offset) params.offset = 0
+		if (!params.sort) params.sort = "name"
+		if (!params.order) params.order = "asc"
+
+		def results = groupsService.listUserGroups(user, params.max, params.offset, params.sort, params.order);
+
+		render (view:'groups-manage', model:["usergroups" : results, "groupsTotal": Group.count(), "menuitem" : "listGroups", "user": user])
+	}
+	
+	def addUserGroups = {
+		def user = User.findById(params.id)
+		render (view:'group-user-add', model:["menuitem" : "searchGroup", 'user': user,
+			appBaseUrl: request.getContextPath()]);
+	}
 	
 	// ------------------------------------------------------------------------
 	//  CS-SYSTEMS:System

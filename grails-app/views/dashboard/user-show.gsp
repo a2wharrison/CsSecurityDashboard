@@ -11,7 +11,7 @@
 		  	$(document).ready(function() {
 		  		var dataToSend = { id: '${user.id}' };
 		  		$.ajax({
-			  	  	url: "${appBaseUrl}/ajaxDashboard/userGroups",
+			  	  	url: "${appBaseUrl}/dashboardAjax/userGroups",
 			  	  	context: $("#groupsContent"),
 			  	  	data: dataToSend
 		  		})

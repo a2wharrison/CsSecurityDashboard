@@ -733,6 +733,46 @@ class DashboardController {
 		redirect(action:'listGroupUsers', params: [id: group.id]);
 	}
 	
+	def editUserInGroup = {
+		def user = User.findById(params.id)
+		def group = Group.findById(params.group)
+		
+		def ug = UserGroup.findByUserAndGroup(user, group);
+		if(ug!=null) {
+			ug.status =  UserStatusInGroup.findByValue(DefaultUserStatusInGroup.ACTIVE.value());
+		} else {
+			
+		}
+		
+		render (view:'group-user-edit', model:[usergroup:ug]);
+	}
+	
+	def updateUserInGroup = {
+		def user = User.findById(params.user)
+		def group = Group.findById(params.id)
+		
+		println params
+		
+		def ug = UserGroup.findByUserAndGroup(user, group);
+		if(ug!=null) {
+			groupsService.updateUserInGroupStatus(ug, params.userStatus)
+			
+			ug.roles.clear();
+			groupsService.updateUserRoleInGroup(ug, GroupRole.findByAuthority(DefaultGroupRoles.ADMIN.value()), params.Admin)
+			groupsService.updateUserRoleInGroup(ug, GroupRole.findByAuthority(DefaultGroupRoles.MANAGER.value()), params.Manager)
+			groupsService.updateUserRoleInGroup(ug, GroupRole.findByAuthority(DefaultGroupRoles.CURATOR.value()), params.Curator)
+			groupsService.updateUserRoleInGroup(ug, GroupRole.findByAuthority(DefaultGroupRoles.USER.value()), params.User)
+			groupsService.updateUserRoleInGroup(ug, GroupRole.findByAuthority(DefaultGroupRoles.GUEST.value()), params.Guest)
+		} else {
+			
+		}
+		redirect(action:'listGroupUsers', params: [id: group.id]);
+	}
+	
+	def enrollUsersInGroup = {
+		render 'not implemented yet'
+	}
+	
 	// ------------------------------------------------------------------------
 	//  CS-SYSTEMS:System
 	// ------------------------------------------------------------------------

@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <%-- by Paolo Ciccarese --%>
   <head>
-	<meta name="layout" content="administrator-dashboard" />
-	
+	<meta name="layout" content="administrator-dashboard" />	
     <g:javascript library="jquery" plugin="jquery"/>
-
   </head>
 
 	<body>

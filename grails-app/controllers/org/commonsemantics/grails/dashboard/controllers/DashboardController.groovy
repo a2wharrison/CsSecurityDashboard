@@ -641,7 +641,7 @@ class DashboardController {
 	
 	def addUserGroups = {
 		def user = User.findById(params.id)
-		render (view:'group-user-add', model:["menuitem" : "searchGroup", 'user': user,
+		render (view:'groups-user-add', model:["menuitem" : "searchGroup", 'user': user,
 			appBaseUrl: request.getContextPath()]);
 	}
 	
@@ -770,7 +770,9 @@ class DashboardController {
 	}
 	
 	def enrollUsersInGroup = {
-		render 'not implemented yet'
+		def group = Group.findById(params.id)
+		render (view:'group-users-add', model:["menuitem" : "searchGroup", group: group,
+			appBaseUrl: request.getContextPath()]);
 	}
 	
 	// ------------------------------------------------------------------------

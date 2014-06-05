@@ -677,6 +677,62 @@ class DashboardController {
 		redirect(action:'listGroupUsers', params: [id: group.id]);
 	}
 	
+	def disableUserInGroup = {
+		def user = User.findById(params.id)
+		def group = Group.findById(params.group)
+		
+		def ug = UserGroup.findByUserAndGroup(user, group);
+		if(ug!=null) {
+			ug.status =  UserStatusInGroup.findByValue(DefaultUserStatusInGroup.SUSPENDED.value());
+		} else {
+			
+		}
+		
+		redirect(action:'listGroupUsers', params: [id: group.id]);
+	}
+	
+	def enableUserInGroup = {
+		def user = User.findById(params.id)
+		def group = Group.findById(params.group)
+		
+		def ug = UserGroup.findByUserAndGroup(user, group);
+		if(ug!=null) {
+			ug.status =  UserStatusInGroup.findByValue(DefaultUserStatusInGroup.ACTIVE.value());
+		} else {
+			
+		}
+		
+		redirect(action:'listGroupUsers', params: [id: group.id]);
+	}
+	
+	def lockUserInGroup = {
+		def user = User.findById(params.id)
+		def group = Group.findById(params.group)
+		
+		def ug = UserGroup.findByUserAndGroup(user, group);
+		if(ug!=null) {
+			ug.status =  UserStatusInGroup.findByValue(DefaultUserStatusInGroup.LOCKED.value());
+		} else {
+			
+		}
+		
+		redirect(action:'listGroupUsers', params: [id: group.id]);
+	}
+	
+	def unlockUserInGroup = {
+		def user = User.findById(params.id)
+		def group = Group.findById(params.group)
+		
+		def ug = UserGroup.findByUserAndGroup(user, group);
+		if(ug!=null) {
+			ug.status =  UserStatusInGroup.findByValue(DefaultUserStatusInGroup.ACTIVE.value());
+		} else {
+			
+		}
+		
+		redirect(action:'listGroupUsers', params: [id: group.id]);
+	}
+	
 	// ------------------------------------------------------------------------
 	//  CS-SYSTEMS:System
 	// ------------------------------------------------------------------------

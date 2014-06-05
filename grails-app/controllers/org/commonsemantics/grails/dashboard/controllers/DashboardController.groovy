@@ -662,6 +662,21 @@ class DashboardController {
 		redirect(action:'showUser', params: [id: params.user]);
 	}
 	
+	def unenrollUserFromGroup = {
+		def user = User.findById(params.id)
+		def group = Group.findById(params.group)
+		
+		def ug = UserGroup.findByUserAndGroup(user, group);
+		
+		if(ug!=null) {
+			ug.delete();
+		} else {
+			
+		}
+			
+		redirect(action:'listGroupUsers', params: [id: group.id]);
+	}
+	
 	// ------------------------------------------------------------------------
 	//  CS-SYSTEMS:System
 	// ------------------------------------------------------------------------

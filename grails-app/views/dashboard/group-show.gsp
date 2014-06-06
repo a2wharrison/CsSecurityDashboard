@@ -21,10 +21,13 @@
 				</div>
 				<div class="buttons">
 					<span class="button">
-						<g:actionSubmit class="edit" action="editGroup" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit Group')}" />
+						<g:link class="edit" controller="dashboard" action="editGroup" id="${group.id}" style="text-decoration: none;">${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit Group')}</g:link>
 					</span>
 					<span class="button">
-						<g:actionSubmit class="list" action="listGroups" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Groups')}" />
+						<g:link class="list" controller="dashboard" action="listGroups" id="${group.id}" style="text-decoration: none;">${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Groups')}</g:link>
+					</span>
+					<span class="button">
+						<g:link class="add" controller="dashboard" action="enrollUsersInGroup" id="${group.id}" style="text-decoration: none;">Enroll More Users</g:link>
 					</span>
 				</div>
 			</g:form>

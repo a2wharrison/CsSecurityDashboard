@@ -51,9 +51,12 @@
 					var eCreation = document.createElement('td');
 					eCreation.innerHTML = response.users[i].dateCreated;
 					eTr.appendChild(eCreation);
+					
 					var eStatus = document.createElement('td');
 					eStatus.innerHTML = response.users[i].status;
 					eTr.appendChild(eStatus);
+
+					
 					eContent.appendChild(eTr);
 				}
 			}

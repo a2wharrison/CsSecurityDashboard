@@ -22,8 +22,13 @@
 							<span class="button">
 								<g:actionSubmit class="save" action="updateSystem" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Update System')}" />
 							</span>
+							<%-- 
 							<span class="button">
 								<g:actionSubmit class="cancel" action="showSystem" value="${message(code: 'org.commonsemantics.grails.general.cancel', default: 'Cancel')}" />
+							</span>
+							--%>
+							<span class="button">
+								<g:link class="cancel" controller="dashboard" action="showSystem" id="${system.id}" style="text-decoration: none;">${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Cancel')}</g:link>
 							</span>
 						</div>
 					</td>

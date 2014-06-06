@@ -21,11 +21,35 @@
 				</div>
 				<div class="buttons">
 					<span class="button">
+						<g:link class="edit" controller="dashboard" action="editSystem" id="${system.id}" style="text-decoration: none;">${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit System')}</g:link>
+					</span>
+					<%-- 
+					<span class="button">
 						<g:actionSubmit class="edit" action="editSystem" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit System')}" />
 					</span>
+					--%>
+					<span class="button">
+						<g:link class="edit" controller="dashboard" action="listSystems" style="text-decoration: none;">${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Systems')}</g:link>
+					</span>
+					<%-- 
 					<span class="button">
 						<g:actionSubmit class="list" action="listSystems" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Systems')}" />
 					</span>
+					--%>
+					<span class="button">
+						<g:actionSubmit class="edit" action="showSystem" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Manage Administrators')}" />
+					</span>
+					<g:if test="${system.enabled!=true}">
+						<span class="button">
+							<g:link class="enable" controller="dashboard" action="enableSystem" id="${system.id}" style="text-decoration: none;">${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Enable')}</g:link>
+						</span>
+					</g:if>
+					<g:elseif test="${system.enabled==true}">
+						<span class="button">
+							<g:link class="disable" controller="dashboard" action="disableSystem" id="${system.id}" style="text-decoration: none;" 
+								onclick="return confirm('${message(code: 'default.button.disable.account.confirm.message', default: 'Are you sure you want to disable the system: '+system.shortName+' ?')}');" >${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Disable')}</g:link>	
+						</span>
+					</g:elseif>
 					<span class="button">
 						<g:actionSubmit class="reload" action="regenerateSystemKey" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Regenerate API Key')}" />
 					</span>

@@ -56,7 +56,6 @@
 					eStatus.innerHTML = response.users[i].status;
 					eTr.appendChild(eStatus);
 
-					
 					eContent.appendChild(eTr);
 				}
 			}

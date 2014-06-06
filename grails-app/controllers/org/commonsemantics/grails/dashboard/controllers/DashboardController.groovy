@@ -37,6 +37,7 @@ import org.commonsemantics.grails.groups.utils.DefaultUserStatusInGroup
 import org.commonsemantics.grails.systems.commands.SystemApiCreateCommand
 import org.commonsemantics.grails.systems.commands.SystemApiEditCommand
 import org.commonsemantics.grails.systems.model.SystemApi
+import org.commonsemantics.grails.systems.model.UserSystemApi
 import org.commonsemantics.grails.users.commands.UserCreateCommand
 import org.commonsemantics.grails.users.model.Role
 import org.commonsemantics.grails.users.model.User
@@ -188,11 +189,11 @@ class DashboardController {
 
 			int offset = (params.offset instanceof String) ? Integer.parseInt(params.offset) : params.offset
 			int max = (params.max instanceof String) ? Integer.parseInt(params.max) : params.max
-			for(int i=offset;i< Math.min(offset+max, usersStatus.size()); i++) {
+			for(int i=offset;i< Math.min(offset+max+1, usersStatus.size()); i++) {
 				users.add(buffer[i]);
 			}
 		} else if (params.sort == 'isAdmin' || params.sort == 'isAnalyst' || params.sort == 'isManager'
-		|| params.sort == 'isCurator' || params.sort == 'isUser') {
+			|| params.sort == 'isCurator' || params.sort == 'isUser') {
 
 		} else if (params.sort == 'name') {
 			def buffer = [];
@@ -200,6 +201,7 @@ class DashboardController {
 			User.list().each { auser ->
 				usersNames.put (auser.id, auser.person.displayName)
 			}
+
 			usersNames = usersNames.sort{ a, b -> a.value.compareTo(b.value) }
 			if(params.order == "desc")
 				usersNames.each { userName ->
@@ -209,9 +211,10 @@ class DashboardController {
 				usersNames.reverseEach { userName ->
 					buffer.add(User.findById(userName.key));
 				}
+				
 			int offset = (params.offset instanceof String) ? Integer.parseInt(params.offset) : params.offset
 			int max = (params.max instanceof String) ? Integer.parseInt(params.max) : params.max
-			for(int i=offset;i< Math.min(offset+max, usersNames.size()); i++) {
+			for(int i=offset;i< Math.min(offset+max+1, usersNames.size()); i++) {
 				users.add(buffer[i]);
 			}
 		} else {
@@ -662,6 +665,27 @@ class DashboardController {
 		redirect(action:'showUser', params: [id: params.user]);
 	}
 	
+	def enrollOneUserInGroup = {
+		
+		def group = Group.findById(params.id)
+		def user = User.findById(params.user)
+		
+		if(UserGroup.findByUserAndGroup(user, group)==null) {
+			def ug = new UserGroup(user:user, group:group,
+				status: UserStatusInGroup.findByValue(DefaultUserStatusInGroup.ACTIVE.value()));
+			
+			if(!ug.save(flush: true)) {
+				ug.errors.allErrors.each { println it }
+			} else {
+				ug.roles = []
+				ug.roles.add GroupRole.findByAuthority(DefaultGroupRoles.USER.value())
+			}
+		} else {
+			println "!!!!!!!!! already a mamber"
+		}		
+		redirect(action:'listGroupUsers', params: [id: group.id]);
+	}
+	
 	def unenrollUserFromGroup = {
 		def user = User.findById(params.id)
 		def group = Group.findById(params.group)
@@ -775,6 +799,8 @@ class DashboardController {
 			appBaseUrl: request.getContextPath()]);
 	}
 	
+
+	
 	// ------------------------------------------------------------------------
 	//  CS-SYSTEMS:System
 	// ------------------------------------------------------------------------
@@ -792,39 +818,41 @@ class DashboardController {
 	}
 	
 	def enableSystem = {
-		def group = SystemApi.findById(params.id)
-		group.enabled = true
+		def system = SystemApi.findById(params.id)
+		system.enabled = true
 		if(params.redirect)
 			redirect(action:params.redirect)
 		else
-			render (view:'showSystem', model:[item: group])
+			render (view:'system-show', model:[system: system])
 	}
 
 	def disableSystem = {
-		def group = SystemApi.findById(params.id)
-		group.enabled = false
+		def system = SystemApi.findById(params.id)
+		system.enabled = false
 		if(params.redirect)
 			redirect(action:params.redirect)
 		else
-			render (view:'showSystem', model:[item: group])
+			render (view:'system-show', model:[system: system])
 	}
 	
 	def saveSystem = {SystemApiCreateCommand systemCreateCmd->
 		if(systemCreateCmd.hasErrors()) {
 			systemCreateCmd.errors.allErrors.each { println it }
-			render(view:'createUser', model:[item:systemCreateCmd])
+			render(view:'system-create', model:[item:systemCreateCmd])
 		} else {
 			def system = systemCreateCmd.createSystem()
 			def user = injectUserProfile();
 			println '------------ ' + system
 			if(system)  {
 				system.createdBy = user;
+				
 				if(!system.save()) {
 					// Failure in saving
 					system.errors.allErrors.each { println it }
 					render(view:'system-create', model:[item:systemCreateCmd,
 								msgError: 'The system has not been saved successfully'])
 				} else {
+					UserSystemApi.create(user, system, true);			
 					redirect (action:'showSystem', id: system.id, model: [
 								msgSuccess: 'System saved successfully']);
 				}
@@ -942,7 +970,8 @@ class DashboardController {
 	
 	def showSystem = {
 		def system = SystemApi.findById(params.id)
-		render (view:'system-show', model:[system: system,
+		def userSystem = UserSystemApi.findAllBySystem(system);
+		render (view:'system-show', model:[system: system, usersystems: userSystem,
 			appBaseUrl: request.getContextPath()])
 	}
 

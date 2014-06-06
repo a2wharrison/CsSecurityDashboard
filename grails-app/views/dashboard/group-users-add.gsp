@@ -27,12 +27,14 @@
 
 		for(var i=0; i< response.users.length; i++) {
 			var eTr = document.createElement('tr');
+			
 			var eUsername = document.createElement('td');
 			var eLink = document.createElement('a');
 			eLink.href = "showUser/" + response.users[i].id;
 			eLink.innerHTML = response.users[i].username;
 			eUsername.appendChild(eLink);
 			eTr.appendChild(eUsername);
+			
 			var displayName = ""
 			if(response.users[i].displayName!=null && response.users[i].displayName.trim().length>0) {
 				displayName = " ("+response.users[i].displayName+")";
@@ -57,9 +59,12 @@
 			eStatus.innerHTML = response.users[i].status;
 			eTr.appendChild(eStatus);
 
-			var eStatus = document.createElement('td');
-			eStatus.innerHTML = "<a href=''>Enroll</a>";
-			eTr.appendChild(eStatus);
+			var tdEnroll = document.createElement('td');
+			var enrollLink = document.createElement('a');
+			enrollLink.href = "../enrollOneUserInGroup/${group.id}" +  "?user=" + response.users[i].id;
+			enrollLink.innerHTML = "Enroll";
+			tdEnroll.appendChild(enrollLink);
+			eTr.appendChild(tdEnroll);
 			
 			eContent.appendChild(eTr);
 		}
@@ -69,8 +74,8 @@
 
 	<body>
 		<div class="title">
-						<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'groups.png')}"/> Enroll Users in Group - id: ${group.id}
-					</div>
+			<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'groups.png')}"/> Enroll Users in Group - id: ${group.id}
+		</div>
 		<div style="padding-top:5px; font-size: 15px;"> <img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'search.png')}" width="16px"/> Search users</div>
 		<g:render plugin="cs-users"  template="/users/usersSearchForm" />
 		<br/>

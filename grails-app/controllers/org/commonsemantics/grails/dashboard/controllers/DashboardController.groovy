@@ -165,7 +165,7 @@ class DashboardController {
 
 		if (!params.max) params.max = 1
 		if (!params.offset) params.offset = 0
-		if (!params.sort) params.sort = "username"
+		if (!params.sort) params.sort = "name"
 		if (!params.order) params.order = "asc"
 
 		//TODO fix pagination
@@ -198,7 +198,7 @@ class DashboardController {
 			def buffer = [];
 			def usersNames = [:]
 			User.list().each { auser ->
-				usersNames.put (auser.id, auser.name)
+				usersNames.put (auser.id, auser.person.displayName)
 			}
 			usersNames = usersNames.sort{ a, b -> a.value.compareTo(b.value) }
 			if(params.order == "desc")

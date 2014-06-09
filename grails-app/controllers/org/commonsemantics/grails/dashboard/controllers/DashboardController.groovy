@@ -853,9 +853,9 @@ class DashboardController {
 		def system = SystemApi.findById(params.id)
 		def userSystem = UserSystemApi.findAllBySystem(system);
 		system.enabled = true
-		if(params.redirect)
-			redirect(action:params.redirect)
-		else
+		if(params.redirect) {
+			redirect(action:params.redirect, id: params.targetid)
+		} else
 			render (view:'system-show', model:[system: system, usersystems: userSystem])
 	}
 
@@ -863,9 +863,9 @@ class DashboardController {
 		def system = SystemApi.findById(params.id)
 		def userSystem = UserSystemApi.findAllBySystem(system);
 		system.enabled = false
-		if(params.redirect)
-			redirect(action:params.redirect)
-		else
+		if(params.redirect) {
+			redirect(action:params.redirect, id: params.targetid)
+		} else
 			render (view:'system-show', model:[system: system, usersystems: userSystem])
 	}
 	

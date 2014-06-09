@@ -56,14 +56,9 @@
 		  			$("#systemsTitle").html("");
 		  			$("#systemsNumber").html(" " + label);
 		  			$.each(data, function(i,item){
-			  			var roles ="";
-						for(var i=0; i<item.roles.length; i++) {
-							roles+=item.roles[i].label
-						}
 		  				$('#systemsTable').append('<tr><td><a href="../showSystem/' + 
 			  				item.system.id + '">' + item.system.name + '</a></td><td>' + 
-			  				item.dateCreated + '</td><td>'+ roles +
-			  				'</td><td> '+ item.status.label + '</td></tr>');
+			  				item.dateCreated + '</td><td>'+ (item.system.enabled==true?'Enabled':'Disabled') + '</td></tr>');
 		  		    });
 		  					  			
 			  	})
@@ -90,13 +85,13 @@
 						</div>
 						<div class="buttons">
 							<span class="button">
-								<g:actionSubmit class="edit" action="editUser" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit User')}" />
+								<g:link class="edit" controller="dashboard" action="editUser"  id="${user.id}" style="text-decoration: none;">Edit User</g:link>
 							</span>
 							<span class="button">
-								<g:actionSubmit class="password"  action="changeUserPassword" value="${message(code: 'default.button.edit.account.label', default: 'Change password')}" />
+								<g:link class="password" controller="dashboard" action="changeUserPassword"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'Change password')}</g:link>
 							</span>
 							<span class="button">
-								<g:actionSubmit class="list" action="listUsers" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Users')}" />
+								<g:link class="list" controller="dashboard" action="listUsers"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'List Users')}</g:link>
 							</span>
 						</div>
 					</g:form>

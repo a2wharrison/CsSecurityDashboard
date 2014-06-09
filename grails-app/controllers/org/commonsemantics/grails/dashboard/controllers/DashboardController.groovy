@@ -851,20 +851,43 @@ class DashboardController {
 	
 	def enableSystem = {
 		def system = SystemApi.findById(params.id)
+		def userSystem = UserSystemApi.findAllBySystem(system);
 		system.enabled = true
 		if(params.redirect)
 			redirect(action:params.redirect)
 		else
-			render (view:'system-show', model:[system: system])
+			render (view:'system-show', model:[system: system, usersystems: userSystem])
 	}
 
 	def disableSystem = {
 		def system = SystemApi.findById(params.id)
+		def userSystem = UserSystemApi.findAllBySystem(system);
 		system.enabled = false
 		if(params.redirect)
 			redirect(action:params.redirect)
 		else
-			render (view:'system-show', model:[system: system])
+			render (view:'system-show', model:[system: system, usersystems: userSystem])
+	}
+	
+	def deleteSystem = {
+		render 'not implemented yet'
+	}
+	
+	def manageUserSystems = {
+		def user = User.findById(params.id)
+
+		if (!params.max) params.max = 15
+		if (!params.offset) params.offset = 0
+		if (!params.sort) params.sort = "name"
+		if (!params.order) params.order = "asc"
+
+		def results = systemsService.listUserSystems(user, params.max, params.offset, params.sort, params.order);
+
+		render (view:'systems-manage', model:["userSystems" : results, "systemsTotal": Group.count(), "menuitem" : "listSystems", "user": user])
+	}
+	
+	def manageSystemAdministrators = {
+		render 'not implemented yet'
 	}
 	
 	def saveSystem = {SystemApiCreateCommand systemCreateCmd->
@@ -1013,17 +1036,19 @@ class DashboardController {
 	
 	def regenerateSystemKey = {
 		def system = SystemApi.findById(params.id)
+		def userSystem = UserSystemApi.findAllBySystem(system);
 		def key = UUID.randomUUID() as String
 		system.apikey = key;
-		render (view:'system-show', model:[system: system,
+		render (view:'system-show', model:[system: system, usersystems: userSystem,
 			appBaseUrl: request.getContextPath()])
 	}
 	
 	def regenerateSystemSecretKey = {
 		def system = SystemApi.findById(params.id)
+		def userSystem = UserSystemApi.findAllBySystem(system);
 		def key = UUID.randomUUID() as String
 		system.secretkey = key;
-		render (view:'system-show', model:[system: system,
+		render (view:'system-show', model:[system: system, usersystems: userSystem,
 			appBaseUrl: request.getContextPath()])
 	}
 }

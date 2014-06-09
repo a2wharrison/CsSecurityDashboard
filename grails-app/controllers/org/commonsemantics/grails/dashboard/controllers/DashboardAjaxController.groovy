@@ -23,6 +23,7 @@ package org.commonsemantics.grails.dashboard.controllers
 import grails.converters.JSON
 
 import org.commonsemantics.grails.groups.model.UserGroup
+import org.commonsemantics.grails.systems.model.UserSystemApi
 import org.commonsemantics.grails.users.model.User
 
 /**
@@ -50,5 +51,16 @@ class DashboardAjaxController {
 		userGroups = UserGroup.findAllByUser(user)
 		JSON.use("deep")
 		render userGroups as JSON;
+	}
+	
+	def userSystems = {
+		return getUserSystems(User.findById(params.id));
+	}
+	
+	def getUserSystems(def user) {
+		def userSystems = []
+		userSystems = UserSystemApi.findAllByUser(user)
+		JSON.use("deep")
+		render userSystems as JSON;
 	}
 }

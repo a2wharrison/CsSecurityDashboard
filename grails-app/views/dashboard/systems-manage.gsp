@@ -7,6 +7,6 @@
   </head>
 
   <body>
-	<g:render plugin="cs-groups" template="/groups/groupsManagment" />
+	<g:render plugin="cs-systems" template="/systems/systemsManagement" />
   </body>
 </html>

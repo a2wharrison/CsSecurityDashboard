@@ -15,8 +15,9 @@
 			<g:form method="post" >
 				<div class="csc-lens-container">
 					<g:render plugin="cs-users" template="/users/userEdit" />
+					<br/>
 				</div>
-				<br/>
+				
 				<tr>
 					<td valign="top" colspan="2" >
 						<div class="buttons">

@@ -93,6 +93,9 @@
 								<g:actionSubmit class="edit" action="editUser" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'Edit User')}" />
 							</span>
 							<span class="button">
+								<g:actionSubmit class="password"  action="changeUserPassword" value="${message(code: 'default.button.edit.account.label', default: 'Change password')}" />
+							</span>
+							<span class="button">
 								<g:actionSubmit class="list" action="listUsers" value="${message(code: 'org.commonsemantics.grails.users.profile.submit', default: 'List Users')}" />
 							</span>
 						</div>

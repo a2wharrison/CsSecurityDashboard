@@ -39,6 +39,7 @@ import org.commonsemantics.grails.systems.commands.SystemApiEditCommand
 import org.commonsemantics.grails.systems.model.SystemApi
 import org.commonsemantics.grails.systems.model.UserSystemApi
 import org.commonsemantics.grails.users.commands.UserCreateCommand
+import org.commonsemantics.grails.users.commands.UserResetPasswordCommand
 import org.commonsemantics.grails.users.model.Role
 import org.commonsemantics.grails.users.model.User
 import org.commonsemantics.grails.users.model.UserRole
@@ -159,6 +160,31 @@ class DashboardController {
 			redirect(action:params.redirect, params:[id: params.id])
 		else
 			redirect(action:'showUser', params:[id: params.id])
+	}
+	
+	def changeUserPassword = {
+		def loggedUser = injectUserProfile()
+		def user = User.findById(params.id)
+		
+		render (view:'user-password', model: [
+			loggedUser:loggedUser, user: user]);
+	}
+	
+	def saveUserPassword = {UserResetPasswordCommand userResetPasswordCommand->
+		def loggedUser = injectUserProfile()
+		def user = User.findById(params.user)
+		if(userResetPasswordCommand.hasErrors()) {
+			userResetPasswordCommand.errors.allErrors.each { println it }
+			render(view:'user-password', model:[
+				loggedUser:loggedUser, 
+				user: user, item:userResetPasswordCommand,
+				msgError: 'The password has not been saved successfully'])
+		} else {
+			render user.password
+			user.password = springSecurityService.encodePassword(userResetPasswordCommand.password);
+			
+			redirect(action:'showUser', params:[id: params.user, msgSuccess: 'Password saved successfully']);
+		}
 	}
 	
 	def performSearchUser = {
@@ -334,17 +360,19 @@ class DashboardController {
 						}
 					}
 				} else {
-					def user = new User(username: params.username, person:person)
+					println UsersUtils.getProfilePrivacy(params.userProfilePrivacy);
+					def user = new User(username: params.username, person:person, password: encodePassword(params.password), profilePrivacy: UsersUtils.getProfilePrivacy(params.userProfilePrivacy))
 					if(!user.save(flush: true)) {
 						log.error("[TEST] While Saving User " + cmd.errors)
 						user.errors.each {
 							// http://grails.org/doc/latest/api/grails/validation/ValidationErrors.html
 							log.error("[TEST] While Saving User " + it.target)
+							
 							it.fieldErrors.each { error ->
 								// http://docs.spring.io/spring/docs/1.2.9/api/org/springframework/validation/FieldError.html
-								//println '---- error ----' + error.getClass().getName()
-								//println '---- error ----' + error.getField()
-								//println '---- error ----' + error.getDefaultMessage()
+								println '---- error ----' + error.getClass().getName()
+								println '---- error ----' + error.getField()
+								println '---- error ----' + error.getDefaultMessage()
 								c.errors.rejectValue(error.getField(),
 										g.message(code: 'org.commonsemantics.grails.users.model.field.username.not.available.message', default: error.getDefaultMessage()))
 
@@ -383,7 +411,7 @@ class DashboardController {
 						log.debug("[TEST] save-user roles, privacy and status");
 						
 						if(c.isPasswordValid()) {
-							user.password = params.password;
+							user.password = encodePassword(params.password);
 						} else {
 							log.error("x3 - Passwords not matching while saving " + it.target)
 							c.errors.rejectValue("password",
@@ -412,7 +440,7 @@ class DashboardController {
 						selectedRole = selectedRole || usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), params.User)
 						if(!selectedRole) usersService.updateUserRole(user, Role.findByAuthority(DefaultUsersRoles.USER.value()), "on")
 						
-						usersService.updateUserProfilePrivacy(user, params.userProfilePrivacy)				
+						//usersService.updateUserProfilePrivacy(user, params.userProfilePrivacy)				
 						usersService.updateUserStatus(user, params.userStatus)
 
 						render (view:'user-show', model:[user:user]);
@@ -421,6 +449,10 @@ class DashboardController {
 				}
 			}
 		}
+	}
+	
+	def encodePassword(def password) {
+		return springSecurityService.encodePassword(password)
 	}
 	
 	def updateUser = { PersonEditCommand personEditCmd ->

@@ -16,7 +16,7 @@
 				<div class="csc-lens-container">
 					<br/>
 					<g:hiddenField name="id" value="${system.id}" /> 
-					<g:render plugin="cs-groups" template="/systems/systemShow" />
+					<g:render plugin="cs-systems" template="/systems/systemShow" />
 					<br/>
 				</div>
 				<div class="buttons">

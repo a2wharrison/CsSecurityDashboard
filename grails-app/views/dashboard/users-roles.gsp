@@ -8,6 +8,6 @@
   </head>
 
   <body>
-	<g:render template="/users/listRoles" plugin="cs-user"/> 
+	<g:render template="/users/listRoles" plugin="cs-users"/> 
   </body>
 </html>

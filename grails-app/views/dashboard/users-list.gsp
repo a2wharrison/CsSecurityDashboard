@@ -14,7 +14,7 @@
 	</div>
 	<sec:access expression="hasRole('ROLE_ADMIN')">
 		<%-- <g:render template="/dashboard/administrator/listUsers" /> --%>
-		<g:render template="/users/usersList" plugin="cs-user"/>
+		<g:render template="/users/usersList" plugin="cs-users"/>
 	</sec:access>
 	<sec:ifNotGranted roles="ROLE_ADMIN">
 		<sec:access expression="hasRole('ROLE_MANAGER')">

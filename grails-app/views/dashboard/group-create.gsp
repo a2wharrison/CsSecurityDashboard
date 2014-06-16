@@ -10,7 +10,7 @@
 		<div class="title">Group Creation </div>
 		<g:form method="post" >
 			<sec:access expression="hasRole('ROLE_ADMIN')">
-				<g:render template="/groups/groupCreate" plugin="cs-group"/>
+				<g:render template="/groups/groupCreate" plugin="cs-groups"/>
 				<%-- <g:render template="/administrator/createGroup" /> --%>
 			</sec:access>
 			<sec:ifNotGranted roles="ROLE_ADMIN">

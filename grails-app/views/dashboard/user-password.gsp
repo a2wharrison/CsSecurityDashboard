@@ -8,6 +8,6 @@
   </head>
 
   <body>
-	<g:render template="/users/resetUserPasswordForm" plugin="cs-user"/> 
+	<g:render template="/users/resetUserPasswordForm" plugin="cs-users"/> 
   </body>
 </html>

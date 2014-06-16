@@ -14,7 +14,7 @@
 			
 			<g:form method="post" >
 				<div class="csc-lens-container">
-					<g:render plugin="cs-groups" template="/systems/systemEditFields" />
+					<g:render plugin="cs-systems" template="/systems/systemEditFields" />
 				</div>
 				<tr>
 					<td valign="top" colspan="2" >

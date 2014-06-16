@@ -9,7 +9,7 @@
 	<body>
 		<div class="title">User Creation </div>
 		<g:form method="post" >
-			<g:render template="/users/userCreate" plugin="cs-user"/>
+			<g:render template="/users/userCreate" plugin="cs-users"/>
 			<br/>
 			<tr>
 				<td valign="top" colspan="2" >

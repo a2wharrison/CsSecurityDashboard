@@ -102,7 +102,7 @@
 					<div class="title">
 						<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'groups.png')}"/><span id="groupsNumber"/> Groups
 					</div>
-					<g:render template="/groups/ajaxShowUserGroups" />
+					<g:render plugin="cs-groups" template="/groups/ajaxShowUserGroups" />
 				</td>
 			</tr>
 			<tr>
@@ -110,7 +110,7 @@
 					<div class="title">
 						<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'computer.png')}"/><span id="systemsNumber"/> Systems
 					</div>
-					<g:render template="/systems/ajaxShowUserSystems" />
+					<g:render plugin="cs-systems" template="/systems/ajaxShowUserSystems" />
 				</td>
 			</tr>
 		</table>

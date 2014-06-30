@@ -84,12 +84,16 @@
 							<br/>
 						</div>
 						<div class="buttons">
-							<span class="button">
-								<g:link class="edit" controller="dashboard" action="editUser"  id="${user.id}" style="text-decoration: none;">Edit User</g:link>
-							</span>
-							<span class="button">
-								<g:link class="password" controller="dashboard" action="changeUserPassword"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'Change password')}</g:link>
-							</span>
+							<g:if test="${grailsApplication.config.org.commonsemantics.grails.users.dashboard.user.editing!='disabled'}">
+								<span class="button">
+									<g:link class="edit" controller="dashboard" action="editUser"  id="${user.id}" style="text-decoration: none;">Edit User</g:link>
+								</span>
+							</g:if>
+							<g:if test="${grailsApplication.config.org.commonsemantics.grails.users.dashboard.user.password!='disabled'}">
+								<span class="button">
+									<g:link class="password" controller="dashboard" action="changeUserPassword"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'Change password')}</g:link>
+								</span>
+							</g:if>
 							<span class="button">
 								<g:link class="list" controller="dashboard" action="listUsers"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'List Users')}</g:link>
 							</span>

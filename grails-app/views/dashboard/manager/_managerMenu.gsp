@@ -1,6 +1,6 @@
 <div id="navcontainer">
-<h2>Administrator</h2>
-<h3>Administer Users</h3>
+<h2>Manager</h2>
+<h3>Manage Users</h3>
 <ul id="navlist">
 	<g:if test="${menuitem!=null && menuitem=='listUsers'}">
 		<li class="active"><g:link controller="dashboard" action="listUsers">List Users</g:link></li>
@@ -26,7 +26,7 @@
 	</g:if>
 </ul>
 
-<h3>Administer Groups</h3>
+<h3>Manage Groups</h3>
 <ul id="navlist">
 	<g:if test="${menuitem!=null && menuitem=='listGroups'}">
 		<li class="active"><g:link controller="dashboard" action="listGroups">List Groups</g:link></li>
@@ -40,22 +40,6 @@
 		<li class="active"><g:link controller="dashboard" action="createGroup">Create Group</g:link></li>
 	</g:if>
 	<g:else><li><g:link controller="dashboard" action="createGroup">Create Group</g:link></li></g:else>
-</ul>
-
-<h3>Administer Systems</h3>
-<ul id="navlist">
-	<g:if test="${menuitem!=null && menuitem=='listSystems'}">
-		<li class="active"><g:link controller="dashboard" action="listSystems">List Systems</g:link></li>
-	</g:if>
-	<g:else><li><g:link controller="dashboard" action="listSystems">List Systems</g:link></li></g:else>
-	<g:if test="${menuitem!=null && menuitem=='searchSystems'}">
-		<li class="active"><g:link controller="dashboard" action="searchSystem">Search Systems</g:link></li>
-	</g:if>
-	<g:else><li><g:link controller="dashboard" action="searchSystem">Search Systems</g:link></li></g:else>
-	<g:if test="${menuitem!=null && menuitem=='createSystem'}">
-		<li class="active"><g:link controller="dashboard" action="createSystem">Create System</g:link></li>
-	</g:if>
-	<g:else><li><g:link controller="dashboard" action="createSystem">Create System</g:link></li></g:else>
 </ul>
 
 <%--

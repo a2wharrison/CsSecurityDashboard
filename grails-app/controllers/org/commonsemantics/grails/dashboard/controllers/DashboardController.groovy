@@ -99,8 +99,80 @@ class DashboardController {
 	}
 	
 	def listUsers = {
+		def user = injectUserProfile()
 		log.debug("List-users max:" + params.max + " offset:" + params.offset)
 		render (view:'users-list', model:[users:User.list(params), usersTotal: User.count(), max: params.max, offset: params.offset, "menuitem" : "listUsers"]);
+	}
+	
+	def listUsersByRole = {
+		def user = injectUserProfile()
+		log.debug("List-users-by-role max:" + params.max + " offset:" + params.offset)
+		
+		if (!params.max) params.max = 15
+		if (!params.offset) params.offset = 0
+		if (!params.sort) params.sort = "authority"
+		if (!params.order) params.order = "asc"
+
+		//TODO fix pagination
+		def users = [];
+		if (params.sort == 'status') {
+			def buffer = [];
+			def usersStatus = [:]
+			User.list().each { auser ->
+				usersStatus.put (auser.id, auser.status)
+			}
+			usersStatus = usersStatus.sort{ a, b -> a.value.compareTo(b.value) }
+			if(params.order == "desc")
+				usersStatus.each { userStatus ->
+					buffer.add(User.findById(userStatus.key));
+				}
+			else
+				usersStatus.reverseEach { userStatus ->
+					buffer.add(User.findById(userStatus.key));
+				}
+
+			int offset = (params.offset instanceof String) ? Integer.parseInt(params.offset) : params.offset
+			int max = (params.max instanceof String) ? Integer.parseInt(params.max) : params.max
+			for(int i=offset;i< Math.min(offset+max, usersStatus.size()); i++) {
+				users.add(buffer[i]);
+			}
+		} else if (params.sort == 'isAdmin' || params.sort == 'isAnalyst' || params.sort == 'isManager'
+		|| params.sort == 'isCurator' || params.sort == 'isUser') {
+
+		} else if (params.sort == 'name') {
+			def buffer = [];
+			def usersNames = [:]
+			User.list().each { auser ->
+				usersNames.put (auser.id, auser.name)
+			}
+			usersNames = usersNames.sort{ a, b -> a.value.compareTo(b.value) }
+			if(params.order == "desc")
+				usersNames.each { userName ->
+					buffer.add(User.findById(userName.key));
+				}
+			else
+				usersNames.reverseEach { userName ->
+					buffer.add(User.findById(userName.key));
+				}
+			int offset = (params.offset instanceof String) ? Integer.parseInt(params.offset) : params.offset
+			int max = (params.max instanceof String) ? Integer.parseInt(params.max) : params.max
+			for(int i=offset;i< Math.min(offset+max, usersNames.size()); i++) {
+				users.add(buffer[i]);
+			}
+		} else {
+			//def userRoles = UserRole.findAllByRole(Role.findById(params.id));
+			//userRoles.each {
+			//	users.add it.user;
+			//}
+		}
+		
+		def role = Role.findById(params.id)
+		users = UserRole.executeQuery("select user from UserRole as userrole join userrole.role as role join userrole.user as user where userrole.role =:role",['role':role]);
+		// Missing ordering and pagination
+		// http://docs.jboss.org/hibernate/orm/3.3/reference/en/html/queryhql.html#queryhql-expressions
+
+		render (view:'listUsers', model:[user: user, "users" : users, "usersTotal": User.count(), "usersroles": UserRole.list(), "roles" : Role.list(),
+					"menuitem" : "listUsers", role: role])
 	}
 	
 	def showUser = {

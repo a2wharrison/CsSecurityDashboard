@@ -17,7 +17,7 @@
 				<g:sortableColumn property="dateCreated" title="${message(code: 'agentPerson.id.label', default: 'Member Since')}" />
 				<g:sortableColumn property="lastUpdated" title="${message(code: 'agentPerson.id.label', default: 'Last updated')}" />
 				<g:sortableColumn property="status" title="${message(code: 'agentPerson.id.label', default: 'Status')}" />
-				<th>Actions</th>
+				<th>Actions++++++</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -46,35 +46,37 @@
 					</td>
 		     		<td>
 		     			<div class="buttons">
-							<g:form>
-								<g:hiddenField name="id" value="${user?.id}" /> 
-								<g:hiddenField name="redirect" value="listUsers" />
-								<span class="button">
-									<g:actionSubmit class="edit"  action="editUser" value="${message(code: 'default.button.edit.account.label', default: 'Edit')}" />
-								</span>
-								<g:if test="${fieldValue(bean: user, field: 'accountLocked') == 'true'}">
+		     				<g:if test="${grailsApplication.config.org.commonsemantics.grails.users.dashboard.user.creation!='disabled'}">
+								<g:form>
+									<g:hiddenField name="id" value="${user?.id}" /> 
+									<g:hiddenField name="redirect" value="listUsers" />
 									<span class="button">
-										<g:actionSubmit class="unlock" action="unlockUser" value="${message(code: 'default.button.unlock.account.label', default: 'Unlock')}" />
+										<g:actionSubmit class="edit"  action="editUser" value="${message(code: 'default.button.edit.account.label', default: 'Edit')}" />
 									</span>
-								</g:if>
-								<g:elseif test="${fieldValue(bean: user, field: 'accountLocked') == 'false'}">
-									<span class="button">
-										<g:actionSubmit class="lock" action="lockUser" value="${message(code: 'default.button.lock.account.label', default: 'Lock')}"
-										onclick="return confirm('${message(code: 'default.button.lock.account.confirm.message', default: 'Are you sure you want to lock this account?')}');" />
-									</span>
-								</g:elseif>
-								<g:if test="${fieldValue(bean: user, field: 'enabled') == 'true'}">
-									<span class="button">
-										<g:actionSubmit class="disable" action="disableUser" value="${message(code: 'default.button.disable.account.label', default: 'Disable')}" 
-										onclick="return confirm('${message(code: 'default.button.disable.account.confirm.message', default: 'Are you sure you want to disable this account?')}');"/>
-									</span>
-								</g:if>
-								<g:elseif test="${fieldValue(bean: user, field: 'enabled') == 'false'}">
-									<span class="button">
-										<g:actionSubmit class="enable" action="enableUser" value="${message(code: 'default.button.enable.account.label', default: 'Enable')}" />
-									</span>
-								</g:elseif>
-							</g:form>
+									<g:if test="${fieldValue(bean: user, field: 'accountLocked') == 'true'}">
+										<span class="button">
+											<g:actionSubmit class="unlock" action="unlockUser" value="${message(code: 'default.button.unlock.account.label', default: 'Unlock')}" />
+										</span>
+									</g:if>
+									<g:elseif test="${fieldValue(bean: user, field: 'accountLocked') == 'false'}">
+										<span class="button">
+											<g:actionSubmit class="lock" action="lockUser" value="${message(code: 'default.button.lock.account.label', default: 'Lock')}"
+											onclick="return confirm('${message(code: 'default.button.lock.account.confirm.message', default: 'Are you sure you want to lock this account?')}');" />
+										</span>
+									</g:elseif>
+									<g:if test="${fieldValue(bean: user, field: 'enabled') == 'true'}">
+										<span class="button">
+											<g:actionSubmit class="disable" action="disableUser" value="${message(code: 'default.button.disable.account.label', default: 'Disable')}" 
+											onclick="return confirm('${message(code: 'default.button.disable.account.confirm.message', default: 'Are you sure you want to disable this account?')}');"/>
+										</span>
+									</g:if>
+									<g:elseif test="${fieldValue(bean: user, field: 'enabled') == 'false'}">
+										<span class="button">
+											<g:actionSubmit class="enable" action="enableUser" value="${message(code: 'default.button.enable.account.label', default: 'Enable')}" />
+										</span>
+									</g:elseif>
+								</g:form>
+							</g:if>
 						</div>
 		     		</td>
 		     	</tr>

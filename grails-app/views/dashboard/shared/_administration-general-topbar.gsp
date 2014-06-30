@@ -1,6 +1,6 @@
 <div style="background: black;">
 	<div class="container">
-		<sec:access expression="hasRole('ROLE_ADMIN')">
+		<sec:access expression="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">
 			<div style="height: 20px; display: block; color: white;">
 				<div id="adminBar">
 					<p class="f_left">

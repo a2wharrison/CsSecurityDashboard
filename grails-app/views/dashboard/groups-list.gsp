@@ -16,7 +16,7 @@
 		</sec:access>
 		<sec:ifNotGranted roles="ROLE_ADMIN">
 			<sec:access expression="hasRole('ROLE_MANAGER')">
-				<g:render template="/manager/listGroups" />
+				<g:render template="/groups/groupsList" />
 			</sec:access>
 		</sec:ifNotGranted>
 		<sec:ifNotGranted roles="ROLE_ADMIN, ROLE_MANAGER">

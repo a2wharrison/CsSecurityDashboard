@@ -1,3 +1,8 @@
+<%@ page import="org.commonsemantics.grails.users.model.User" %>
+<%@ page import="org.commonsemantics.grails.users.model.UserRole" %>
+<%@ page import="org.commonsemantics.grails.users.utils.DefaultUsersRoles" %>
+<%@ page import="org.commonsemantics.grails.users.utils.UsersUtils" %>
+<%@ page import="org.commonsemantics.grails.users.utils.DefaultUsersProfilePrivacy" %>
 <%@ page import="org.springframework.web.servlet.support.RequestContextUtils" %>
 
 <!doctype html>
@@ -69,6 +74,24 @@
 				});
 		  	});
 		</script>
+		
+		<g:set var="loggedUserRole" value="${UserRole.findAllByUser(loggedUser)}"/>
+		<g:if test="${loggedUserRole.role.authority.contains(DefaultUsersRoles.ADMIN.value())}"><g:set var="loggedUserRoleLevel" value="3"/></g:if>
+		<g:else>
+			<g:if test="${loggedUserRole.role.authority.contains(DefaultUsersRoles.MANAGER.value())}"><g:set var="loggedUserRoleLevel" value="2"/></g:if>
+			<g:else>
+				<g:if test="${loggedUserRole.role.authority.contains(DefaultUsersRoles.USER.value())}"><g:set var="loggedUserRoleLevel" value="1"/></g:if>
+			</g:else>
+		</g:else>
+		
+		<g:set var="userRole" value="${UserRole.findAllByUser(user)}"/>
+		<g:if test="${userRole.role.authority.contains(DefaultUsersRoles.ADMIN.value())}"><g:set var="userRoleLevel" value="3"/></g:if>
+		<g:else>
+			<g:if test="${userRole.role.authority.contains(DefaultUsersRoles.MANAGER.value())}"><g:set var="userRoleLevel" value="2"/></g:if>
+			<g:else>
+				<g:if test="${userRole.role.authority.contains(DefaultUsersRoles.USER.value())}"><g:set var="userRoleLevel" value="1"/></g:if>
+			</g:else>
+		</g:else>	
 	
 		<table>
 			<tr>
@@ -80,19 +103,29 @@
 						<div class="csc-lens-container">
 							<br/>
 							<g:hiddenField name="id" value="${user.id}" /> 
-							<g:render plugin="cs-users" template="/users/userShow" />
+							<g:if test="${user.profilePrivacy.label==DefaultUsersProfilePrivacy.PUBLIC.label()}">
+								<g:render plugin="cs-users" template="/users/userShow" />
+							</g:if>
+							<g:elseif test="${user.profilePrivacy.label==DefaultUsersProfilePrivacy.PRIVATE.label()}">
+								<g:render plugin="cs-users" template="/users/userShowAsPrivate" />
+							</g:elseif>
+							<g:elseif test="${user.profilePrivacy.label==DefaultUsersProfilePrivacy.ANONYMOUS.label()}">
+								<g:render plugin="cs-users" template="/users/userShowAsAnonymous" />
+							</g:elseif>
 							<br/>
 						</div>
 						<div class="buttons">
-							<g:if test="${grailsApplication.config.org.commonsemantics.grails.users.dashboard.user.editing!='disabled'}">
-								<span class="button">
-									<g:link class="edit" controller="dashboard" action="editUser"  id="${user.id}" style="text-decoration: none;">Edit User</g:link>
-								</span>
-							</g:if>
-							<g:if test="${grailsApplication.config.org.commonsemantics.grails.users.dashboard.user.password!='disabled'}">
-								<span class="button">
-									<g:link class="password" controller="dashboard" action="changeUserPassword"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'Change password')}</g:link>
-								</span>
+							<g:if test="${loggedUserRoleLevel>=userRoleLevel || loggedUser.id == user.id}">
+								<g:if test="${grailsApplication.config.org.commonsemantics.grails.users.dashboard.user.editing!='disabled'}">
+									<span class="button">
+										<g:link class="edit" controller="dashboard" action="editUser"  id="${user.id}" style="text-decoration: none;">Edit User</g:link>
+									</span>
+								</g:if>
+								<g:if test="${grailsApplication.config.org.commonsemantics.grails.users.dashboard.user.password!='disabled'}">
+									<span class="button">
+										<g:link class="password" controller="dashboard" action="changeUserPassword"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'Change password')}</g:link>
+									</span>
+								</g:if>
 							</g:if>
 							<span class="button">
 								<g:link class="list" controller="dashboard" action="listUsers"  id="${user.id}" style="text-decoration: none;">${message(code: 'default.button.edit.account.label', default: 'List Users')}</g:link>

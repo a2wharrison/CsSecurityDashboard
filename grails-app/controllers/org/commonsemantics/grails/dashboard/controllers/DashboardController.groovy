@@ -101,7 +101,7 @@ class DashboardController {
 	def listUsers = {
 		def user = injectUserProfile()
 		log.debug("List-users max:" + params.max + " offset:" + params.offset)
-		render (view:'users-list', model:[users:User.list(params), usersTotal: User.count(), max: params.max, offset: params.offset, "menuitem" : "listUsers"]);
+		render (view:'users-list', model:[users:User.list(params), usersTotal: User.count(), loggedUser: user, max: params.max, offset: params.offset, "menuitem" : "listUsers"]);
 	}
 	
 	def listUsersByRole = {
@@ -176,8 +176,9 @@ class DashboardController {
 	}
 	
 	def showUser = {
+		def loggedUser = injectUserProfile();
 		def user = User.findById(params.id);
-		render (view:'user-show', model:[label:params.testId, description:params.testDescription, user:user]);
+		render (view:'user-show', model:[label:params.testId, description:params.testDescription, user:user, loggedUser: loggedUser]);
 	}
 	
 	def editUser = {

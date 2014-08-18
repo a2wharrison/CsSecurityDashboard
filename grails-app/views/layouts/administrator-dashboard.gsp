@@ -7,6 +7,7 @@
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"><!--<![endif]-->
 <head>
 	<g:render template="/shared/meta" />
+	<title><g:layoutTitle default="Annotopia"/></title>
 	<%-- <g:render template="/shared/title-and-icon" /> --%>
 	
 	<link rel="stylesheet" href="${resource(dir: 'css/shared', file: 'reset.css')}" type="text/css">

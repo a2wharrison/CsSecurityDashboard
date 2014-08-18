@@ -28,11 +28,16 @@
 					</p>
 					<p class="f_right">
 						<img style="display: inline; vertical-align: middle;"
-							src="${resource(dir:'images/dashboard',file:'pie.png')}" />
+							src="${resource(dir:'images/dashboard',file:'chart.png')}" />
 						<g:link controller="crunch" action="pulse">Pulse</g:link>
+						&nbsp;&nbsp;
+						<img style="display: inline; vertical-align: middle;"
+							src="${resource(dir:'images/dashboard',file:'pie.png')}" />
+						<g:link controller="crunch" action="stats">Stats</g:link>
 						&nbsp;&nbsp; <img style="display: inline; vertical-align: middle;"
 							src="${resource(dir:'images/dashboard',file:'danger.png')}" />
 						<g:link controller="crunch" action="index">Danger Zone</g:link>
+						&nbsp;
 					</p>
 				</div>
 			</div>

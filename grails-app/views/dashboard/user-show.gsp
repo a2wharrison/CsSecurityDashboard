@@ -99,6 +99,7 @@
 					<div class="title">
 						<img style="display: inline; vertical-align: middle;" src="${resource(dir:'images/dashboard',file:'user.png')}"/> User - id: ${user.id}
 					</div>
+					
 					<g:form method="post" >
 						<div class="csc-lens-container">
 							<br/>
@@ -106,6 +107,9 @@
 							<g:if test="${user.profilePrivacy.label==DefaultUsersProfilePrivacy.PUBLIC.label()}">
 								<g:render plugin="cs-users" template="/users/userShow" />
 							</g:if>
+							<g:elseif test="${user.profilePrivacy.label==DefaultUsersProfilePrivacy.RESTRICTED.label()}">
+								<g:render plugin="cs-users" template="/users/userShowAsPrivate" />
+							</g:elseif>
 							<g:elseif test="${user.profilePrivacy.label==DefaultUsersProfilePrivacy.PRIVATE.label()}">
 								<g:render plugin="cs-users" template="/users/userShowAsPrivate" />
 							</g:elseif>

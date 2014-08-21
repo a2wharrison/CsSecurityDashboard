@@ -396,6 +396,8 @@ class DashboardController {
 	
 	def saveUser = {PersonCreateCommand cmd ->
 		log.debug("save-user " + cmd.displayName);
+		def loggedUser = injectUserProfile()
+		
 		def g = new ValidationTagLib()
 		UserCreateCommand c = new UserCreateCommand();
 		def validationFailed = agentsService.validatePerson(cmd);
@@ -416,7 +418,7 @@ class DashboardController {
 			person.country = params.country;
 			person.displayName = params.displayName;
 			person.email = params.email;
-
+			
 			Person.withTransaction { personStatus ->
 				if(!person.save(flush: true)) {
 					log.error("[TEST] While Saving User's Person " + person.errors)
@@ -516,7 +518,7 @@ class DashboardController {
 						//usersService.updateUserProfilePrivacy(user, params.userProfilePrivacy)				
 						usersService.updateUserStatus(user, params.userStatus)
 
-						render (view:'user-show', model:[user:user]);
+						render (view:'user-show', model:[user:user, loggedUser:loggedUser]);
 						return;
 					}
 				}
@@ -529,6 +531,7 @@ class DashboardController {
 	}
 	
 	def updateUser = { PersonEditCommand personEditCmd ->
+		def loggedUser = injectUserProfile()
 		def validationFailed = agentsService.validatePerson(personEditCmd);
 		if (validationFailed) {
 			log.error("While Saving User's Person " + personEditCmd.errors)
@@ -558,7 +561,7 @@ class DashboardController {
 			person.displayName = params.displayName;
 			person.email = params.email;
 			
-			render (view:'user-show', model:[user: user, 
+			render (view:'user-show', model:[user: user, loggedUser:loggedUser, 
 				appBaseUrl: request.getContextPath()])
 		}
 	}

@@ -36,7 +36,7 @@
 						<g:link controller="crunch" action="stats">Stats</g:link>
 						&nbsp;&nbsp; <img style="display: inline; vertical-align: middle;"
 							src="${resource(dir:'images/dashboard',file:'danger.png')}" />
-						<g:link controller="crunch" action="index">Danger Zone</g:link>
+						<g:link controller="${controller}" action="secretIndex">Danger Zone</g:link>
 						&nbsp;
 					</p>
 				</div>
